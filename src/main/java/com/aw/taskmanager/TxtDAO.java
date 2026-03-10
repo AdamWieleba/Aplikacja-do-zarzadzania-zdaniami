@@ -1,8 +1,11 @@
 package com.aw.taskmanager;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class TxtDAO implements TaskDAO {
@@ -33,8 +36,28 @@ public class TxtDAO implements TaskDAO {
 
     @Override
     public List<Task> loadAll() {
-        //uzupełnić
-        return null;
+        List<Task> list = new ArrayList<>();
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            String line = reader.readLine();
+            while(line != null) {
+                Task task = new Task();
+                task.setArchivedState(line.equals("[Archived]\n"));
+                line = reader.readLine();
+
+                task.setName(line);
+                line = reader.readLine();
+
+                task.setDescr(line.replace("`", "\n"));
+                line = reader.readLine();
+                line = reader.readLine();
+
+                list.add(task);
+            }
+        } catch (IOException e) {
+            System.err.println("Błąd podczas zapisu do pliku: " + e.getMessage());
+        }
+        return list;
     }
 
     @Override
@@ -48,7 +71,7 @@ public class TxtDAO implements TaskDAO {
         StringBuilder sb = new StringBuilder(task.isArchived() ? "[Archived]\n" : "\n");
         sb.append(task.getName())
             .append("\n")
-            .append(task.getDescr().replace("\n", "`")) //pozwoli zapisać des w 1 linii
+            .append(task.getDescr().replace("\n", "`")) //zapisuje descr w 1 linii
             .append("\n\n");
 
         return sb;

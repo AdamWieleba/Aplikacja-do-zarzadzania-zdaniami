@@ -2,12 +2,14 @@ package com.aw.taskmanager;
 
 public class Task {
     private String name;
-    private String description;
+    private String descr;
     private boolean isArchived = false;
     
+    public Task() {}
+
     public Task(String name, String description) {
         this.name = name;
-        this.description = description;
+        this.descr = description;
     }
     
     public String getName() {
@@ -19,11 +21,11 @@ public class Task {
     }
     
     public String getDescr() {
-        return description;
+        return descr;
     }
     
     public void setDescr(String description) {
-        this.description = description;
+        this.descr = description;
     }
     
     public boolean isArchived() {
@@ -32,6 +34,13 @@ public class Task {
     
     public void setArchivedState(boolean isArchived) {
         this.isArchived = isArchived;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return o instanceof Task t &&
+            name.equals(t.name) &&
+            descr.equals(t.descr);
     }
 
 }

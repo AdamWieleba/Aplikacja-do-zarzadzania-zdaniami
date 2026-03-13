@@ -29,13 +29,34 @@ public class TaskDAOTest {
         assertEquals(orgTasks, loadedTasks);
     }
 
+    @ParameterizedTest
+    @MethodSource("daoProvider")
+    public void testDelete(Class<? extends TaskDAO> DAOclass, String file) {
+        // given
+        TaskDAO taskDAO = createDAO(DAOclass, file);
+        Task toDelete = new Task("name3", "des.\n..des");
+        
+        List<Task> expectedTasks = new ArrayList<>();
+        expectedTasks.add(new Task("name1", "des...\ndes"));
+        expectedTasks.add(new Task("name2", "des\n...des"));
+        expectedTasks.add(toDelete);
+        taskDAO.saveAll(expectedTasks);
+
+        // when
+        taskDAO.delete(toDelete);
+        List<Task> loadedTasks = taskDAO.loadAll();
+        expectedTasks.remove(toDelete);
+
+        // then
+        assertEquals(expectedTasks, loadedTasks);
+    }
+
     private static Stream<Arguments> daoProvider() {
         return Stream.of(
             Arguments.of(TxtDAO.class, "./target/DAOTest.txt")
             //,Arguments.of(.class, "")
         );
-    }/*Próbowałem wykorzystać klasy dziedziczące + super(.class, "-"), ale cały czas były błędy "JUnit nie wie 
-    jak przekazać parametry", "flexible constructors są niedostępne" itp. Więc musiałem zrobić tak jak jest. */
+    }
     
     private TaskDAO createDAO(Class<? extends TaskDAO> DAOclass, String file) {
         TaskDAO instance;

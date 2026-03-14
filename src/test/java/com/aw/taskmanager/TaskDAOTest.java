@@ -16,10 +16,14 @@ public class TaskDAOTest {
     public void testSaveAll_LoadAll(Class<? extends TaskDAO> DAOclass, String file) {
         // given
         TaskDAO taskDAO = createDAO(DAOclass, file);
+        String descr = "..\n..";
+        String difficulty = "hard";
+        Integer priority = 1;
+        String notes = ".\n..\n.";
         List<Task> orgTasks = new ArrayList<>();
-        orgTasks.add(new Task("name1", "des...\ndes"));
-        orgTasks.add(new Task("name2", "des\n...des"));
-        orgTasks.add(new Task("name3", "des.\n..des"));
+        orgTasks.add(new Task("name1", descr, difficulty, priority, notes, true));
+        orgTasks.add(new Task("name2", descr, difficulty, priority, notes, false));
+        orgTasks.add(new Task("name3", descr, difficulty, priority, notes, false));
 
         // when
         taskDAO.saveAll(orgTasks);
@@ -34,11 +38,15 @@ public class TaskDAOTest {
     public void testDelete(Class<? extends TaskDAO> DAOclass, String file) {
         // given
         TaskDAO taskDAO = createDAO(DAOclass, file);
-        Task toDelete = new Task("name3", "des.\n..des");
-        
+        String descr = "..\n..";
+        String difficulty = "hard";
+        Integer priority = 1;
+        String notes = ".\n..\n.";
+
+        Task toDelete = new Task("name3", descr, difficulty, priority, notes, false);
         List<Task> expectedTasks = new ArrayList<>();
-        expectedTasks.add(new Task("name1", "des...\ndes"));
-        expectedTasks.add(new Task("name2", "des\n...des"));
+        expectedTasks.add(new Task("name1", descr, difficulty, priority, notes, false));
+        expectedTasks.add(new Task("name2", descr, difficulty, priority, notes, false));
         expectedTasks.add(toDelete);
         taskDAO.saveAll(expectedTasks);
 

@@ -10,9 +10,13 @@ public class Task {
     
     public Task() {}
 
-    public Task(String name, String description) {
+    public Task(String name, String description, String difficulty, Integer priority, String notes, boolean isArchived) {
         this.name = name;
         this.descr = description;
+        this.difficulty = difficulty;
+        this.priority = priority;
+        this.notes = notes;
+        this.isArchived = isArchived;
     }
     
     public String getName() {

@@ -50,8 +50,17 @@ public class TxtDAO implements TaskDAO {
 
                 task.setDescr(line.replace("`", "\n"));
                 line = reader.readLine();
+
+                task.setDifficulty(line);
                 line = reader.readLine();
 
+                task.setPriority(Integer.parseInt(line));
+                line = reader.readLine();
+
+                task.setNotes(line.replace("`", "\n"));
+                line = reader.readLine();
+                
+                line = reader.readLine();
                 list.add(task);
             }
         } catch (IOException e) {
@@ -68,12 +77,24 @@ public class TxtDAO implements TaskDAO {
     }
     
     public StringBuilder buildTask(Task task) {
-        StringBuilder sb = new StringBuilder(task.isArchived() ? "[Archived]\n" : "\n");
-        sb.append(task.getName())
-            .append("\n")
-            .append(task.getDescr().replace("\n", "`")) //zapisuje descr w 1 linii
-            .append("\n\n");
+        StringBuilder sb = new StringBuilder();
+        appendLine(sb, task.isArchived() ? "[Archived]" : "");
 
+        appendLine(sb, task.getName());
+        appendLine(sb, task.getDescr().replace("\n", "`")); //zapisuje w 1 linii
+        appendLine(sb, task.getDifficulty());
+        appendLine(sb, task.getPriority());
+        appendLine(sb, task.getNotes().replace("\n", "`"));
+
+        sb.append("\n");
         return sb;
+    }
+
+    private StringBuilder appendLine(StringBuilder sb, String line) {
+        return sb.append(line).append("\n");
+    }
+
+    private StringBuilder appendLine(StringBuilder sb, Object o) {
+        return sb.append(o.toString()).append("\n");
     }
 }

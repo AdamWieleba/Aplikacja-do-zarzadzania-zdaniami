@@ -13,7 +13,7 @@ public class TaskDAOTest {
 
     @ParameterizedTest
     @MethodSource("daoProvider")
-    public void testSaveAll_LoadAll(Class<? extends TaskDAO> DAOclass, String file) {
+    public void testSaveAll_LoadAll(Class<? extends TaskDAO> DAOclass, String file) throws Exception {
         // given
         TaskDAO taskDAO = createDAO(DAOclass, file);
         String descr = "..\n..";
@@ -35,7 +35,7 @@ public class TaskDAOTest {
 
     @ParameterizedTest
     @MethodSource("daoProvider")
-    public void testDelete(Class<? extends TaskDAO> DAOclass, String file) {
+    public void testDelete(Class<? extends TaskDAO> DAOclass, String file) throws Exception {
         // given
         TaskDAO taskDAO = createDAO(DAOclass, file);
         String descr = "..\n..";
@@ -61,7 +61,8 @@ public class TaskDAOTest {
 
     private static Stream<Arguments> daoProvider() {
         return Stream.of(
-            Arguments.of(TxtDAO.class, "./target/DAOTest.txt")
+            //Arguments.of(TxtDAO.class, "./target/DAOTest.txt")
+            Arguments.of(XmlDAO.class, "./target/DAOTest.txt")
             //,Arguments.of(.class, "")
         );
     }

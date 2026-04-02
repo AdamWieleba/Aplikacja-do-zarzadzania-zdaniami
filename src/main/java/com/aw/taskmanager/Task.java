@@ -1,5 +1,9 @@
 package com.aw.taskmanager;
 
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
+
+@XmlRootElement
 public class Task {
     private String name;
     private String descr;
@@ -19,6 +23,7 @@ public class Task {
         this.isArchived = isArchived;
     }
     
+    @XmlElement
     public String getName() {
         return name;
     }
@@ -26,6 +31,7 @@ public class Task {
         this.name = name;
     }
     
+    @XmlElement
     public String getDescr() {
         return descr;
     }
@@ -33,6 +39,7 @@ public class Task {
         this.descr = description;
     }
     
+    @XmlElement
     public String getDifficulty() {
         return difficulty;
     }
@@ -40,6 +47,7 @@ public class Task {
         this.difficulty = difficulty;
     }
     
+    @XmlElement
     public Integer getPriority() {
         return priority;
     }
@@ -47,6 +55,7 @@ public class Task {
         this.priority = priority;
     }
     
+    @XmlElement
     public String getNotes() {
         return notes;
     }
@@ -54,6 +63,7 @@ public class Task {
         this.notes = notes;
     }
     
+    @XmlElement
     public boolean isArchived() {
         return isArchived;
     }

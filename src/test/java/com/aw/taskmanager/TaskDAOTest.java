@@ -20,10 +20,16 @@ public class TaskDAOTest {
         String difficulty = "hard";
         Integer priority = 1;
         String notes = ".\n..\n.";
+        Task task1 = new Task("name1", descr, difficulty, priority, notes, null, true);
+        Task task2 = new Task("name2", descr, difficulty, priority, notes, null, false);
+        List<Dependency> dependencies = new ArrayList<>();
+        dependencies.add(new Dependency(task2, Dependency.DependencyType.FS));
+        Task task3 = new Task("name3", descr, difficulty, priority, notes, dependencies, false);
+        
         List<Task> orgTasks = new ArrayList<>();
-        orgTasks.add(new Task("name1", descr, difficulty, priority, notes, true));
-        orgTasks.add(new Task("name2", descr, difficulty, priority, notes, false));
-        orgTasks.add(new Task("name3", descr, difficulty, priority, notes, false));
+        orgTasks.add(task1);
+        orgTasks.add(task2);
+        orgTasks.add(task3);
 
         // when
         taskDAO.saveAll(orgTasks);
@@ -42,11 +48,15 @@ public class TaskDAOTest {
         String difficulty = "hard";
         Integer priority = 1;
         String notes = ".\n..\n.";
+        Task task1 = new Task("name1", descr, difficulty, priority, notes, null, true);
+        List<Dependency> dependencies = new ArrayList<>();
+        dependencies.add(new Dependency(task1, Dependency.DependencyType.FS));
+        Task task2 = new Task("name2", descr, difficulty, priority, notes, dependencies, false);
 
-        Task toDelete = new Task("name3", descr, difficulty, priority, notes, false);
+        Task toDelete = new Task("name3", descr, difficulty, priority, notes, null, false);
         List<Task> expectedTasks = new ArrayList<>();
-        expectedTasks.add(new Task("name1", descr, difficulty, priority, notes, false));
-        expectedTasks.add(new Task("name2", descr, difficulty, priority, notes, false));
+        expectedTasks.add(task1);
+        expectedTasks.add(task2);
         expectedTasks.add(toDelete);
         taskDAO.saveAll(expectedTasks);
 

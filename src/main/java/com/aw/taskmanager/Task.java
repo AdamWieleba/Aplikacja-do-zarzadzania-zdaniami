@@ -1,29 +1,43 @@
 package com.aw.taskmanager;
 
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlRootElement;
+import java.util.List;
+import java.util.UUID;
+import jakarta.xml.bind.annotation.*;
 
 @XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD) // -> jaxb będzie korzystał bezpośrednio z pól, więc nie wymaga get/set ani @XmlElement
 public class Task {
     private String name;
     private String descr;
     private String difficulty;
     private Integer priority;
     private String notes;
-    private boolean isArchived = false;
+    private boolean isArchived;
     
-    public Task() {}
+    @XmlElementWrapper(name = "dependencies")
+    @XmlElement(name = "dependency")
+    private List<Dependency> dependencies;
+    
+    @XmlID
+    private String id;
+    
+    public Task() {} // wymagane przez jaxb
 
-    public Task(String name, String description, String difficulty, Integer priority, String notes, boolean isArchived) {
+    public Task(String name, String description, String difficulty, Integer priority, String notes, List<Dependency> dependencies, boolean isArchived) {
         this.name = name;
         this.descr = description;
         this.difficulty = difficulty;
         this.priority = priority;
         this.notes = notes;
+        this.dependencies = dependencies;
         this.isArchived = isArchived;
+        this.id = UUID.randomUUID().toString();
     }
     
-    @XmlElement
+    public String getId() {
+        return id;
+    }
+    
     public String getName() {
         return name;
     }
@@ -31,7 +45,6 @@ public class Task {
         this.name = name;
     }
     
-    @XmlElement
     public String getDescr() {
         return descr;
     }
@@ -39,7 +52,6 @@ public class Task {
         this.descr = description;
     }
     
-    @XmlElement
     public String getDifficulty() {
         return difficulty;
     }
@@ -47,7 +59,6 @@ public class Task {
         this.difficulty = difficulty;
     }
     
-    @XmlElement
     public Integer getPriority() {
         return priority;
     }
@@ -55,7 +66,6 @@ public class Task {
         this.priority = priority;
     }
     
-    @XmlElement
     public String getNotes() {
         return notes;
     }
@@ -63,7 +73,13 @@ public class Task {
         this.notes = notes;
     }
     
-    @XmlElement
+    public List<Dependency> getDependencies() {
+        return dependencies;
+    }
+    public void setDependencies(List<Dependency> dependencies) {
+        this.dependencies = dependencies;
+    }
+    
     public boolean isArchived() {
         return isArchived;
     }
@@ -74,8 +90,7 @@ public class Task {
     @Override
     public boolean equals(Object o) {
         return o instanceof Task t &&
-            name.equals(t.name) &&
-            descr.equals(t.descr);
+            id.equals(t.id);
     }
 
 }

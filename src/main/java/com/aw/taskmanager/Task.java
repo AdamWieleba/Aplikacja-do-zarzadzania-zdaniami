@@ -31,7 +31,7 @@ public class Task {
         this.notes = notes;
         this.dependencies = dependencies;
         this.isArchived = isArchived;
-        this.id = UUID.randomUUID().toString();
+        this.id = UUID.randomUUID().toString().replace("-", "");
     }
     
     public String getId() {
@@ -83,7 +83,7 @@ public class Task {
     public boolean isArchived() {
         return isArchived;
     }
-    public void setArchivedState(boolean isArchived) {
+    public void setArchived(boolean isArchived) {
         this.isArchived = isArchived;
     }
 

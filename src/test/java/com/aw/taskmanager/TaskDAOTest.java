@@ -7,6 +7,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import static com.aw.taskmanager.Dependency.DependencyType.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TaskDAOTest {
@@ -16,27 +17,20 @@ public class TaskDAOTest {
     public void testSaveAll_LoadAll(Class<? extends TaskDAO> DAOclass, String file) throws Exception {
         // given
         TaskDAO taskDAO = createDAO(DAOclass, file);
-        String descr = "..\n..";
-        String difficulty = "hard";
-        Integer priority = 1;
-        String notes = ".\n..\n.";
-        Task task1 = new Task("name1", descr, difficulty, priority, notes, null, true);
-        Task task2 = new Task("name2", descr, difficulty, priority, notes, null, false);
-        List<Dependency> dependencies = new ArrayList<>();
-        dependencies.add(new Dependency(task2, Dependency.DependencyType.FS));
-        Task task3 = new Task("name3", descr, difficulty, priority, notes, dependencies, false);
         
-        List<Task> orgTasks = new ArrayList<>();
-        orgTasks.add(task1);
-        orgTasks.add(task2);
-        orgTasks.add(task3);
+        Task task1 = new TaskBuilder().name("name1").isArchived(true).build();
+        Task task2 = TaskDAOTest.this.createDefaultTestTask("name2");
+        Task task3 = new TaskBuilder(TaskDAOTest.this.createDefaultTestTask("name3"))
+                .dependencies(List.of(new Dependency(task2, FINISH_TO_START))).build();
+        
+        List<Task> originalTasks = List.of(task1, task2, task3);
 
         // when
-        taskDAO.saveAll(orgTasks);
+        taskDAO.saveAll(originalTasks);
         List<Task> loadedTasks = taskDAO.loadAll();
 
         // then
-        assertEquals(orgTasks, loadedTasks);
+        assertEquals(originalTasks, loadedTasks);
     }
 
     @ParameterizedTest
@@ -44,20 +38,12 @@ public class TaskDAOTest {
     public void testDelete(Class<? extends TaskDAO> DAOclass, String file) throws Exception {
         // given
         TaskDAO taskDAO = createDAO(DAOclass, file);
-        String descr = "..\n..";
-        String difficulty = "hard";
-        Integer priority = 1;
-        String notes = ".\n..\n.";
-        Task task1 = new Task("name1", descr, difficulty, priority, notes, null, true);
-        List<Dependency> dependencies = new ArrayList<>();
-        dependencies.add(new Dependency(task1, Dependency.DependencyType.FS));
-        Task task2 = new Task("name2", descr, difficulty, priority, notes, dependencies, false);
 
-        Task toDelete = new Task("name3", descr, difficulty, priority, notes, null, false);
-        List<Task> expectedTasks = new ArrayList<>();
-        expectedTasks.add(task1);
-        expectedTasks.add(task2);
-        expectedTasks.add(toDelete);
+        Task task1 = createDefaultTestTask("name1");
+        Task task2 = createDefaultTestTask("name2");
+        Task toDelete = createDefaultTestTask("toDelete");
+
+        List<Task> expectedTasks = new ArrayList<>(List.of(task1, task2, toDelete)); //samo List.of() tworzy niemodyfikowalną listę
         taskDAO.saveAll(expectedTasks);
 
         // when
@@ -67,6 +53,16 @@ public class TaskDAOTest {
 
         // then
         assertEquals(expectedTasks, loadedTasks);
+    }
+
+    private Task createDefaultTestTask(String name) {
+        String descr = "..\n        .";
+        String difficulty = "medium";
+        Integer priority = 1;
+        String notes = descr;
+        List<Dependency> dependencies = null;
+        boolean isArchived = false;
+        return new Task(name, descr, difficulty, priority, notes, dependencies, isArchived);
     }
 
     private static Stream<Arguments> daoProvider() {

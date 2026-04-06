@@ -6,7 +6,7 @@ import jakarta.xml.bind.annotation.*;
 public class Dependency {
 
     public enum DependencyType {
-        FS, SS, FF;  //finish-to-start, ...
+        FINISH_TO_START, START_TO_START, FINISH_TO_FINISH;
     }
 
     private DependencyType type;

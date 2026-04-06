@@ -31,11 +31,16 @@ public class Task {
         this.notes = notes;
         this.dependencies = dependencies;
         this.isArchived = isArchived;
-        this.id = UUID.randomUUID().toString().replace("-", "");
+        this.id = UUID.randomUUID().toString().replace("-", "");  
     }
     
     public String getId() {
         return id;
+    }
+    public void generateId() { //powód: TaskBuilder używa pustego konstruktora, ale nie można dać tam id, bo jaxb będzie je nadpisywał
+        if(id == null) { 
+            this.id = UUID.randomUUID().toString().replace("-", "");
+        }
     }
     
     public String getName() {

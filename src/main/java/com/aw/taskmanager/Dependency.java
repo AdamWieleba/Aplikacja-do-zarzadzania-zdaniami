@@ -4,21 +4,26 @@ import jakarta.xml.bind.annotation.*;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Dependency {
-
-    public enum DependencyType {
-        FINISH_TO_START, START_TO_START, FINISH_TO_FINISH;
-    }
-
-    private DependencyType type;
+    private String name;
     
     @XmlIDREF  // zapisze w xml tylko referencję do tego obiektu
+    private Task src;
+    @XmlIDREF
     private Task dst;
 
     public Dependency() {}
 
-    public Dependency(Task dst, DependencyType type) {
+    public Dependency(Task src, Task dst, String name) {
+        this.src = src;
         this.dst = dst;
-        this.type = type;
+        this.name = name;
+    }
+
+    public Task getSrc() {
+        return src;
+    }
+    public void setSrc(Task src) {
+        this.src = src;
     }
 
     public Task getDst() {
@@ -28,10 +33,10 @@ public class Dependency {
         this.dst = dst;
     }
 
-    public DependencyType getType() {
-        return type;
+    public String getName() {
+        return name;
     }
-    public void setType(DependencyType type) {
-        this.type = type;
+    public void setName(String name) {
+        this.name = name;
     }
 }

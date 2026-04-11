@@ -1,6 +1,7 @@
 package com.aw.taskmanager;
 
 import java.util.List;
+import java.util.ArrayList;
 import java.util.UUID;
 import jakarta.xml.bind.annotation.*;
 
@@ -16,20 +17,19 @@ public class Task {
     
     @XmlElementWrapper(name = "dependencies")
     @XmlElement(name = "dependency")
-    private List<Dependency> dependencies;
+    private List<Dependency> dependencies = new ArrayList<>();  //gwarantuje inicjalizację
     
     @XmlID
     private String id;
     
     public Task() {} // wymagane przez jaxb
 
-    public Task(String name, String description, String difficulty, Integer priority, String notes, List<Dependency> dependencies, boolean isArchived) {
+    public Task(String name, String description, String difficulty, Integer priority, String notes, boolean isArchived) {
         this.name = name;
         this.descr = description;
         this.difficulty = difficulty;
         this.priority = priority;
         this.notes = notes;
-        this.dependencies = dependencies;
         this.isArchived = isArchived;
         this.id = UUID.randomUUID().toString().replace("-", "");  
     }
@@ -37,10 +37,24 @@ public class Task {
     public String getId() {
         return id;
     }
-    public void generateId() { //powód: TaskBuilder używa pustego konstruktora, ale nie można dać tam id, bo jaxb będzie je nadpisywał
+    public void generateId() { //powód: TaskBuilder używa pustego konstruktora, ale nie można dać w nim id, bo jaxb będzie je nadpisywał
         if(id == null) { 
             this.id = UUID.randomUUID().toString().replace("-", "");
         }
+    }
+    
+    public List<Dependency> getDependencies() {
+        return dependencies;
+    }
+    
+    public void addDependency(Dependency dp) {
+        dp.getSrc().dependencies.add(dp);
+        dp.getDst().dependencies.add(dp);
+    }
+    
+    public void removeDependency(Dependency dp) {
+        dp.getSrc().dependencies.remove(dp);
+        dp.getDst().dependencies.remove(dp);
     }
     
     public String getName() {
@@ -76,13 +90,6 @@ public class Task {
     }
     public void setNotes(String notes) {
         this.notes = notes;
-    }
-    
-    public List<Dependency> getDependencies() {
-        return dependencies;
-    }
-    public void setDependencies(List<Dependency> dependencies) {
-        this.dependencies = dependencies;
     }
     
     public boolean isArchived() {

@@ -7,7 +7,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import static com.aw.taskmanager.Dependency.DependencyType.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TaskDAOTest {
@@ -19,9 +18,9 @@ public class TaskDAOTest {
         TaskDAO taskDAO = createDAO(DAOclass, file);
         
         Task task1 = new TaskBuilder().name("name1").isArchived(true).build();
-        Task task2 = TaskDAOTest.this.createDefaultTestTask("name2");
-        Task task3 = new TaskBuilder(TaskDAOTest.this.createDefaultTestTask("name3"))
-                .dependencies(List.of(new Dependency(task2, FINISH_TO_START))).build();
+        Task task2 = createDefaultTestTask("name2");
+        Task task3 = createDefaultTestTask("name3");
+        task3.addDependency(new Dependency(task3, task2, "finish -> start"));
         
         List<Task> originalTasks = List.of(task1, task2, task3);
 
@@ -60,9 +59,8 @@ public class TaskDAOTest {
         String difficulty = "medium";
         Integer priority = 1;
         String notes = descr;
-        List<Dependency> dependencies = null;
         boolean isArchived = false;
-        return new Task(name, descr, difficulty, priority, notes, dependencies, isArchived);
+        return new Task(name, descr, difficulty, priority, notes, isArchived);
     }
 
     private static Stream<Arguments> daoProvider() {

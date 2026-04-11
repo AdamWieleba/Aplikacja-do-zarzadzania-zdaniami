@@ -1,7 +1,5 @@
 package com.aw.taskmanager;
 
-import java.util.List;
-
 public class TaskBuilder {
     private final Task task;
 
@@ -39,8 +37,13 @@ public class TaskBuilder {
         return this;
     }
     
-    public TaskBuilder dependencies(List<Dependency> dependencies) {
-        task.setDependencies(dependencies);
+    public TaskBuilder addDependency(Dependency dependency) {
+        task.addDependency(dependency);
+        return this;
+    }
+    
+    public TaskBuilder removeDependency(Dependency dependency) {
+        task.removeDependency(dependency);
         return this;
     }
 

@@ -13,7 +13,7 @@ public class TaskManagerFrame extends JFrame {
     private final TaskController controller;
     private final DefaultListModel<Task> listModel = new DefaultListModel<>();
     private final JList<Task> taskList = new JList<>(listModel);
-    private final JTextArea detailsArea = new JTextArea();
+    private final JEditorPane detailsArea = new JEditorPane();
 
     public TaskManagerFrame(TaskController controller) {
         super("Task Manager");
@@ -51,8 +51,8 @@ public class TaskManagerFrame extends JFrame {
         });
 
         detailsArea.setEditable(false);
-        detailsArea.setLineWrap(true);
-        detailsArea.setWrapStyleWord(true);
+        detailsArea.setContentType("text/html");
+        detailsArea.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, Boolean.TRUE);
 
         JButton addButton = new JButton("Dodaj");
         JButton deleteButton = new JButton("Usuń");
@@ -96,13 +96,34 @@ public class TaskManagerFrame extends JFrame {
         }
 
         StringBuilder sb = new StringBuilder();
-        sb.append("Nazwa: ").append(task.getName()).append("\n");
-        sb.append("Opis: ").append(task.getDescr()).append("\n");
-        sb.append("Trudność: ").append(task.getDifficulty()).append("\n");
-        sb.append("Priorytet: ").append(task.getPriority()).append("\n");
-        sb.append("Notatki: ").append(task.getNotes()).append("\n");
+        sb.append("<html><body style='font-family:").append(detailsArea.getFont().getFamily())
+                .append("; font-size:").append(detailsArea.getFont().getSize()).append("pt;'>");
+
+        sb.append("<h2 style='text-align:center; margin:0; padding:0;'>")
+                .append(escapeHtml(task.getName())).append("</h2>");
+        sb.append("<p style='margin-top:12px;'> ")
+                .append(escapeHtml(task.getDescr())).append("</p>");
+        sb.append("<hr style='margin:18px 0 0 0;'>");
+        sb.append("<p><strong>Trudność:</strong> ")
+                .append(escapeHtml(task.getDifficulty())).append("</p>");
+        sb.append("<p><strong>Priorytet:</strong> ")
+                .append(task.getPriority()).append("</p>");
+        sb.append("<p><strong>Notatki:</strong> ")
+                .append(escapeHtml(task.getNotes())).append("</p>");
+        sb.append("</body></html>");
 
         detailsArea.setText(sb.toString());
+        detailsArea.setCaretPosition(0);
+    }
+
+    private String escapeHtml(String text) {
+        if (text == null) {
+            return "";
+        }
+        return text.replace("&", "&amp;")
+                .replace("<", "&lt;")
+                .replace(">", "&gt;")
+                .replace("\"", "&quot;");
     }
 
     private void showAddDialog() {

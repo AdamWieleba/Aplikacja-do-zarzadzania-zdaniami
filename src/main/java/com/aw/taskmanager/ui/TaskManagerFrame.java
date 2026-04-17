@@ -104,8 +104,12 @@ public class TaskManagerFrame extends JFrame {
         sb.append("<p style='margin-top:12px;'> ")
                 .append(escapeHtml(task.getDescr())).append("</p>");
         sb.append("<hr style='margin:18px 0 0 0;'>");
-        sb.append("<p><strong>Trudność:</strong> ")
-                .append(escapeHtml(task.getDifficulty())).append("</p>");
+        sb.append("<p><strong>Trudność:</strong>")
+                .append(" &nbsp;")  //spacje nieprzerywane
+                .append(escapeHtml(task.getDifficultyStr()))
+                .append(" &nbsp;(")
+                .append(formatDifficultyInt(task.getDifficultyInt()))
+                .append(" na 5)</p>");
         sb.append("<p><strong>Priorytet:</strong> ")
                 .append(task.getPriority()).append("</p>");
         sb.append("<p><strong>Notatki:</strong> ")
@@ -126,17 +130,29 @@ public class TaskManagerFrame extends JFrame {
                 .replace("\"", "&quot;");
     }
 
+    private String formatDifficultyInt(Double difficultyInt) {
+        if (difficultyInt == null) {
+            return "";
+        }
+        if (difficultyInt % 1 == 0) {
+            return String.format("%.0f", difficultyInt);
+        }
+        return String.format("%.1f", difficultyInt);
+    }
+
     private void showAddDialog() {
         JTextField nameField = new JTextField();
         JTextField descrField = new JTextField();
-        JTextField difficultyField = new JTextField();
+        JTextField difficultyStrField = new JTextField();
+        JSpinner difficultyIntSpinner = new JSpinner(new SpinnerNumberModel(0.0, 0.0, 5.0, 0.5));
         JTextField priorityField = new JTextField();
         JTextField notesField = new JTextField();
 
         Object[] fields = {
                 "Nazwa:", nameField,
                 "Opis:", descrField,
-                "Trudność:", difficultyField,
+                "Trudność (tekst):", difficultyStrField,
+                "Trudność (0-5, co 0.5):", difficultyIntSpinner,
                 "Priorytet:", priorityField,
                 "Notatki:", notesField
         };
@@ -146,10 +162,12 @@ public class TaskManagerFrame extends JFrame {
 
         if (result == JOptionPane.OK_OPTION) {
             int priority = parsePriority(priorityField.getText());
+            double difficultyInt = ((Number) difficultyIntSpinner.getValue()).doubleValue();
             controller.createTask(
                     nameField.getText().trim(),
                     descrField.getText().trim(),
-                    difficultyField.getText().trim(),
+                    difficultyStrField.getText().trim(),
+                    difficultyInt,
                     priority,
                     notesField.getText().trim(),
                     false);

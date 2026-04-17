@@ -10,7 +10,8 @@ import jakarta.xml.bind.annotation.*;
 public class Task {
     private String name;
     private String descr;
-    private String difficulty;
+    private String difficultyStr;
+    private Double difficultyInt;
     private Integer priority;
     private String notes;
     private boolean isArchived;
@@ -24,10 +25,11 @@ public class Task {
     
     public Task() {} // wymagane przez jaxb
 
-    public Task(String name, String description, String difficulty, Integer priority, String notes, boolean isArchived) {
+    public Task(String name, String description, String difficultyStr, Double difficultyInt, Integer priority, String notes, boolean isArchived) {
         this.name = name;
         this.descr = description;
-        this.difficulty = difficulty;
+        this.difficultyStr = difficultyStr;
+        this.difficultyInt = difficultyInt;
         this.priority = priority;
         this.notes = notes;
         this.isArchived = isArchived;
@@ -71,11 +73,18 @@ public class Task {
         this.descr = description;
     }
     
-    public String getDifficulty() {
-        return difficulty;
+    public String getDifficultyStr() {
+        return difficultyStr;
     }
-    public void setDifficulty(String difficulty) {
-        this.difficulty = difficulty;
+    public void setDifficultyStr(String difficultyStr) {
+        this.difficultyStr = difficultyStr;
+    }
+    
+    public Double getDifficultyInt() {
+        return difficultyInt;
+    }
+    public void setDifficultyInt(Double difficultyInt) {
+        this.difficultyInt = difficultyInt;
     }
     
     public Integer getPriority() {

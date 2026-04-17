@@ -25,8 +25,13 @@ public class TaskBuilder {
         return this;
     }
 
-    public TaskBuilder difficulty(String difficulty) {
-        task.setDifficulty(difficulty);
+    public TaskBuilder difficultyStr(String difficultyStr) {
+        task.setDifficultyStr(difficultyStr);
+        return this;
+    }
+
+    public TaskBuilder difficultyInt(Double difficultyInt) {
+        task.setDifficultyInt(difficultyInt);
         return this;
     }
 

@@ -30,8 +30,8 @@ public class TaskBuilder {
         return this;
     }
 
-    public TaskBuilder difficultyInt(Double difficultyInt) {
-        task.setDifficultyInt(difficultyInt);
+    public TaskBuilder difficultyDbl(Double difficultyDbl) {
+        task.setDifficultyDbl(difficultyDbl);
         return this;
     }
 

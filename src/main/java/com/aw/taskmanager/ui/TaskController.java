@@ -23,12 +23,12 @@ public class TaskController {
         return Collections.unmodifiableList(tasks);
     }
 
-    public Task createTask(String name, String descr, String difficultyStr, Double difficultyInt, Integer priority, String notes, boolean archived) {
+    public Task createTask(String name, String descr, String difficultyStr, Double difficultyDbl, Integer priority, String notes, boolean archived) {
         Task task = new TaskBuilder()
             .name(name)
             .descr(descr)
             .difficultyStr(difficultyStr)
-            .difficultyInt(difficultyInt)
+            .difficultyDbl(difficultyDbl)
             .priority(priority)
             .notes(notes)
             .isArchived(archived)

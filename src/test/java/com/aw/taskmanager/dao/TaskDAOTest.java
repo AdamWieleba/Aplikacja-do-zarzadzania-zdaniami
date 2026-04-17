@@ -61,11 +61,11 @@ public class TaskDAOTest {
     private Task createDefaultTestTask(String name) {
         String descr = "..\n        .";
         String difficultyStr = "medium";
-        Double difficultyInt = 5.0;
+        Double difficultyDbl = 5.0;
         Integer priority = 1;
         String notes = descr;
         boolean isArchived = false;
-        return new Task(name, descr, difficultyStr, difficultyInt, priority, notes, isArchived);
+        return new Task(name, descr, difficultyStr, difficultyDbl, priority, notes, isArchived);
     }
 
     private static Stream<Arguments> daoProvider() {

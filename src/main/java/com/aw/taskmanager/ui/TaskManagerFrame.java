@@ -103,7 +103,7 @@ public class TaskManagerFrame extends JFrame {
         sb.append("<h2 style='text-align:center; margin:0; padding:0;'>")
                 .append(escapeHtml(task.getName())).append("</h2>");
         sb.append("<p style='margin-top:12px;'> ")
-                .append(escapeHtml(task.getDescr())).append("</p>");
+                .append(escapeHtmlWithBreaks(task.getDescr())).append("</p>");
         sb.append("<hr style='margin:18px 0 0 0;'>");
         sb.append("<p><strong>Trudność:</strong>")
                 .append(" &nbsp;")  //spacje nieprzerywane
@@ -113,8 +113,8 @@ public class TaskManagerFrame extends JFrame {
                 .append(" na 5)</p>");
         sb.append("<p><strong>Priorytet:</strong> ")
                 .append(task.getPriority()).append("</p>");
-        sb.append("<p><strong>Notatki:</strong> ")
-                .append(escapeHtml(task.getNotes())).append("</p>");
+        sb.append("<p><strong>Notatki:</strong> <br/>")
+                .append(escapeHtmlWithBreaks(task.getNotes())).append("</p>");
         sb.append(renderDependenciesSection(task.getDependencies()));
         sb.append("</body></html>");
 
@@ -134,8 +134,8 @@ public class TaskManagerFrame extends JFrame {
             String dstName = dp.getDst() != null ? escapeHtml(dp.getDst().getName()) : "";
             sb.append("<p style='margin:4px 0;'><strong>")
                     .append(srcName).append(" </strong> -> <strong> ").append(dstName)
-                    .append("</strong><br/>Opis: ")
-                    .append(escapeHtml(dp.getName()))
+                    .append("</strong><br/>")
+                    .append(escapeHtmlWithBreaks(dp.getName()))
                     .append("</p>");
         }
         sb.append("</div>");
@@ -152,6 +152,13 @@ public class TaskManagerFrame extends JFrame {
                 .replace("\"", "&quot;");
     }
 
+    private String escapeHtmlWithBreaks(String text) {
+        if (text == null) {
+            return "";
+        }
+        return escapeHtml(text).replace("\n", "<br>");
+    }
+
     private String formatDifficultyDbl(Double difficultyDbl) {
         if (difficultyDbl == null) {
             return "";
@@ -163,38 +170,88 @@ public class TaskManagerFrame extends JFrame {
     }
 
     private void showAddDialog() {
+        JDialog dialog = new JDialog(this, "Dodaj zadanie", true);
+        dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+        dialog.setSize(400, 500);
+        dialog.setLocationRelativeTo(this);
+
         JTextField nameField = new JTextField();
-        JTextField descrField = new JTextField();
+        JTextArea descrArea = new JTextArea(3, 20);
+        descrArea.setLineWrap(true);
+        descrArea.setWrapStyleWord(true);
+        JScrollPane descrScroll = new JScrollPane(descrArea);
         JTextField difficultyStrField = new JTextField();
         JSpinner difficultyDblSpinner = new JSpinner(new SpinnerNumberModel(0.0, 0.0, 5.0, 0.5));
         JTextField priorityField = new JTextField();
-        JTextField notesField = new JTextField();
+        JTextArea notesArea = new JTextArea(3, 20);
+        notesArea.setLineWrap(true);
+        notesArea.setWrapStyleWord(true);
+        JScrollPane notesScroll = new JScrollPane(notesArea);
 
-        Object[] fields = {
-                "Nazwa:", nameField,
-                "Opis:", descrField,
-                "Trudność (tekst):", difficultyStrField,
-                "Trudność (0-5, co 0.5):", difficultyDblSpinner,
-                "Priorytet:", priorityField,
-                "Notatki:", notesField
-        };
+        JButton okButton = new JButton("OK");
+        JButton cancelButton = new JButton("Anuluj");
 
-        int result = JOptionPane.showConfirmDialog(this, fields, "Dodaj zadanie",
-                JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
-
-        if (result == JOptionPane.OK_OPTION) {
+        okButton.addActionListener(e -> {
             int priority = parsePriority(priorityField.getText());
             double difficultyDbl = ((Number) difficultyDblSpinner.getValue()).doubleValue();
             controller.createTask(
                     nameField.getText().trim(),
-                    descrField.getText().trim(),
+                    descrArea.getText().trim(),
                     difficultyStrField.getText().trim(),
                     difficultyDbl,
                     priority,
-                    notesField.getText().trim(),
+                    notesArea.getText().trim(),
                     false);
             refreshTasks();
-        }
+            dialog.dispose();
+        });
+
+        cancelButton.addActionListener(e -> dialog.dispose());
+
+        JPanel panel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.anchor = GridBagConstraints.WEST;
+
+        gbc.gridx = 0; gbc.gridy = 0;
+        panel.add(new JLabel("Nazwa:"), gbc);
+        gbc.gridx = 1; gbc.fill = GridBagConstraints.HORIZONTAL; gbc.weightx = 1.0;
+        panel.add(nameField, gbc);
+
+        gbc.gridx = 0; gbc.gridy = 1; gbc.fill = GridBagConstraints.NONE; gbc.weightx = 0;
+        panel.add(new JLabel("Opis:"), gbc);
+        gbc.gridx = 1; gbc.fill = GridBagConstraints.BOTH; gbc.weightx = 1.0; gbc.weighty = 0.5;
+        panel.add(descrScroll, gbc);
+
+        gbc.gridx = 0; gbc.gridy = 2; gbc.fill = GridBagConstraints.NONE; gbc.weightx = 0; gbc.weighty = 0;
+        panel.add(new JLabel("Trudność (tekst):"), gbc);
+        gbc.gridx = 1; gbc.fill = GridBagConstraints.HORIZONTAL; gbc.weightx = 1.0;
+        panel.add(difficultyStrField, gbc);
+
+        gbc.gridx = 0; gbc.gridy = 3;
+        panel.add(new JLabel("Trudność (0-5, co 0.5):"), gbc);
+        gbc.gridx = 1;
+        panel.add(difficultyDblSpinner, gbc);
+
+        gbc.gridx = 0; gbc.gridy = 4;
+        panel.add(new JLabel("Priorytet:"), gbc);
+        gbc.gridx = 1;
+        panel.add(priorityField, gbc);
+
+        gbc.gridx = 0; gbc.gridy = 5; gbc.fill = GridBagConstraints.NONE; gbc.weightx = 0;
+        panel.add(new JLabel("Notatki:"), gbc);
+        gbc.gridx = 1; gbc.fill = GridBagConstraints.BOTH; gbc.weightx = 1.0; gbc.weighty = 0.5;
+        panel.add(notesScroll, gbc);
+
+        JPanel buttonPanel = new JPanel(new FlowLayout());
+        buttonPanel.add(okButton);
+        buttonPanel.add(cancelButton);
+
+        dialog.getContentPane().setLayout(new BorderLayout());
+        dialog.getContentPane().add(panel, BorderLayout.CENTER);
+        dialog.getContentPane().add(buttonPanel, BorderLayout.SOUTH);
+
+        dialog.setVisible(true);
     }
 
     private void deleteSelectedTask() {

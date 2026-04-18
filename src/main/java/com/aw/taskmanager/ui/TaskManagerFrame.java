@@ -1,5 +1,6 @@
 package com.aw.taskmanager.ui;
 
+import com.aw.taskmanager.model.Dependency;
 import com.aw.taskmanager.model.Task;
 
 import javax.swing.*;
@@ -114,10 +115,31 @@ public class TaskManagerFrame extends JFrame {
                 .append(task.getPriority()).append("</p>");
         sb.append("<p><strong>Notatki:</strong> ")
                 .append(escapeHtml(task.getNotes())).append("</p>");
+        sb.append(renderDependenciesSection(task.getDependencies()));
         sb.append("</body></html>");
 
         detailsArea.setText(sb.toString());
         detailsArea.setCaretPosition(0);
+    }
+
+    private String renderDependenciesSection(List<Dependency> dependencies) {
+        if (dependencies == null || dependencies.isEmpty()) {
+            return "<p><strong>Zależności:</strong> brak</p>";
+        }
+        StringBuilder sb = new StringBuilder();
+        sb.append("<p><strong>Powiązania:</strong></p>");
+        sb.append("<div style='margin-left:6px;'>");
+        for (Dependency dp : dependencies) {
+            String srcName = dp.getSrc() != null ? escapeHtml(dp.getSrc().getName()) : "";
+            String dstName = dp.getDst() != null ? escapeHtml(dp.getDst().getName()) : "";
+            sb.append("<p style='margin:4px 0;'><strong>")
+                    .append(srcName).append(" </strong> -> <strong> ").append(dstName)
+                    .append("</strong><br/>Opis: ")
+                    .append(escapeHtml(dp.getName()))
+                    .append("</p>");
+        }
+        sb.append("</div>");
+        return sb.toString();
     }
 
     private String escapeHtml(String text) {

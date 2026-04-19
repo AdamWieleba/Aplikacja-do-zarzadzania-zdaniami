@@ -25,7 +25,7 @@ public class TaskController {
 
     public Task createTask(String name, String descr, String difficultyStr, Double difficultyDbl, Integer priority, String notes, boolean archived) {
         Task task = new TaskBuilder()
-            .name(name)
+            .name(makeTitle(name))
             .descr(descr)
             .difficultyStr(difficultyStr)
             .difficultyDbl(difficultyDbl)
@@ -35,6 +35,25 @@ public class TaskController {
             .build();
         tasks.add(task);
         return task;
+    }
+
+    public boolean updateTask(String id, String name, String descr, String difficultyStr, Double difficultyDbl, Integer priority, String notes, boolean archived) {
+        Optional<Task> existing = findTaskById(id);
+        existing.ifPresent(task -> new TaskBuilder(task)
+            .name(makeTitle(name))
+            .descr(descr)
+            .difficultyStr(difficultyStr)
+            .difficultyDbl(difficultyDbl)
+            .priority(priority)
+            .notes(notes)
+            .isArchived(archived)
+            .build());
+        return existing.isPresent();
+    }
+
+    private String makeTitle(String name) {
+        String trimmed = (name == null) ? "" : name.stripTrailing();
+        return trimmed.isEmpty() ? "(Bez tytułu)" : trimmed;
     }
 
     public Optional<Task> findTaskById(String id) {

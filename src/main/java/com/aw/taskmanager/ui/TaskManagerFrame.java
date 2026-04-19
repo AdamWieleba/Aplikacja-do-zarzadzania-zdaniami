@@ -56,17 +56,20 @@ public class TaskManagerFrame extends JFrame {
         detailsArea.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, Boolean.TRUE);
 
         JButton addButton = new JButton("Dodaj");
+        JButton editButton = new JButton("Edytuj");
         JButton deleteButton = new JButton("Usuń");
         JButton archiveButton = new JButton("Archiwizuj");
         JButton restoreButton = new JButton("Przywróć");
 
         addButton.addActionListener(e -> showAddDialog());
+        editButton.addActionListener(e -> showEditDialog());
         deleteButton.addActionListener(e -> deleteSelectedTask());
         archiveButton.addActionListener(e -> archiveSelectedTask(true));
         restoreButton.addActionListener(e -> archiveSelectedTask(false));
 
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         buttonPanel.add(addButton);
+        buttonPanel.add(editButton);
         buttonPanel.add(deleteButton);
         buttonPanel.add(archiveButton);
         buttonPanel.add(restoreButton);
@@ -170,7 +173,20 @@ public class TaskManagerFrame extends JFrame {
     }
 
     private void showAddDialog() {
-        JDialog dialog = new JDialog(this, "Dodaj zadanie", true);
+        showTaskDialog(null);
+    }
+
+    private void showEditDialog() {
+        Task task = taskList.getSelectedValue();
+        if (task == null) {
+            return;
+        }
+        showTaskDialog(task);
+    }
+
+    private void showTaskDialog(Task taskToEdit) {
+        boolean editMode = taskToEdit != null;
+        JDialog dialog = new JDialog(this, editMode ? "Edytuj zadanie" : "Dodaj zadanie", true);
         dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         dialog.setSize(400, 500);
         dialog.setLocationRelativeTo(this);
@@ -188,20 +204,41 @@ public class TaskManagerFrame extends JFrame {
         notesArea.setWrapStyleWord(true);
         JScrollPane notesScroll = new JScrollPane(notesArea);
 
+        if (editMode) {
+            nameField.setText(taskToEdit.getName());
+            descrArea.setText(taskToEdit.getDescr());
+            difficultyStrField.setText(taskToEdit.getDifficultyStr());
+            difficultyDblSpinner.setValue(taskToEdit.getDifficultyDbl() != null ? taskToEdit.getDifficultyDbl() : 0.0);
+            priorityField.setText(String.valueOf(taskToEdit.getPriority()));
+            notesArea.setText(taskToEdit.getNotes());
+        }
+
         JButton okButton = new JButton("OK");
         JButton cancelButton = new JButton("Anuluj");
 
         okButton.addActionListener(e -> {
             int priority = parsePriority(priorityField.getText());
             double difficultyDbl = ((Number) difficultyDblSpinner.getValue()).doubleValue();
-            controller.createTask(
-                    nameField.getText().trim(),
-                    descrArea.getText().trim(),
-                    difficultyStrField.getText().trim(),
-                    difficultyDbl,
-                    priority,
-                    notesArea.getText().trim(),
-                    false);
+            if (editMode) {
+                controller.updateTask(
+                        taskToEdit.getId(),
+                        nameField.getText().stripTrailing(),
+                        descrArea.getText().stripTrailing(),
+                        difficultyStrField.getText().stripTrailing(),
+                        difficultyDbl,
+                        priority,
+                        notesArea.getText().stripTrailing(),
+                        taskToEdit.isArchived());
+            } else {
+                controller.createTask(
+                        nameField.getText().stripTrailing(),
+                        descrArea.getText().stripTrailing(),
+                        difficultyStrField.getText().stripTrailing(),
+                        difficultyDbl,
+                        priority,
+                        notesArea.getText().stripTrailing(),
+                        false);
+            }
             refreshTasks();
             dialog.dispose();
         });
@@ -252,6 +289,17 @@ public class TaskManagerFrame extends JFrame {
         dialog.getContentPane().add(buttonPanel, BorderLayout.SOUTH);
 
         dialog.setVisible(true);
+
+        // Po zamknięciu dialogu - ponownie wybierz zadanie (zarówno po OK jak i Anuluj)
+        if (editMode && taskToEdit != null) {
+            String taskId = taskToEdit.getId();
+            for (int i = 0; i < listModel.getSize(); i++) {
+                if (listModel.getElementAt(i).getId().equals(taskId)) {
+                    taskList.setSelectedIndex(i);
+                    break;
+                }
+            }
+        }
     }
 
     private void deleteSelectedTask() {

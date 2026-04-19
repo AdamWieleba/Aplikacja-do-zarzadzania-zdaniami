@@ -1,6 +1,7 @@
 package com.aw.taskmanager.ui;
 
 import com.aw.taskmanager.model.Task;
+import com.aw.taskmanager.model.Dependency;
 import com.aw.taskmanager.builder.TaskBuilder;
 import com.aw.taskmanager.dao.TaskDAO;
 
@@ -76,5 +77,14 @@ public class TaskController {
 
     public void saveAll() {
         dao.saveAll(tasks);
+    }
+
+    public void addDependency(Task src, Task dst, String description) {
+        Dependency dep = new Dependency(src, dst, description);
+        src.addDependency(dep);
+    }
+
+    public void removeDependency(Dependency dep) {
+        dep.getSrc().removeDependency(dep);
     }
 }

@@ -4,6 +4,7 @@ import com.aw.taskmanager.model.Dependency;
 import com.aw.taskmanager.model.Task;
 
 import javax.swing.*;
+
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -60,12 +61,16 @@ public class TaskManagerFrame extends JFrame {
         JButton deleteButton = new JButton("Usuń");
         JButton archiveButton = new JButton("Archiwizuj");
         JButton restoreButton = new JButton("Przywróć");
+        JButton addDependencyButton = new JButton("Dodaj powiązanie");
+        JButton removeDependencyButton = new JButton("Usuń powiązanie");
 
         addButton.addActionListener(e -> showAddDialog());
         editButton.addActionListener(e -> showEditDialog());
         deleteButton.addActionListener(e -> deleteSelectedTask());
         archiveButton.addActionListener(e -> archiveSelectedTask(true));
         restoreButton.addActionListener(e -> archiveSelectedTask(false));
+        addDependencyButton.addActionListener(e -> showAddDependencyDialog());
+        removeDependencyButton.addActionListener(e -> showRemoveDependencyDialog());
 
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         buttonPanel.add(addButton);
@@ -73,6 +78,8 @@ public class TaskManagerFrame extends JFrame {
         buttonPanel.add(deleteButton);
         buttonPanel.add(archiveButton);
         buttonPanel.add(restoreButton);
+        buttonPanel.add(addDependencyButton);
+        buttonPanel.add(removeDependencyButton);
 
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
                 new JScrollPane(taskList),
@@ -343,5 +350,183 @@ public class TaskManagerFrame extends JFrame {
                 button.setEnabled(selected);
             }
         }
+    }
+
+    private void showAddDependencyDialog() {
+        Task selectedTask = taskList.getSelectedValue();
+        if (selectedTask == null) {
+            JOptionPane.showMessageDialog(this, "Wybierz zadanie najpierw.", "Brak wyboru", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        JDialog dialog = new JDialog(this, "Dodaj powiązanie", true);
+        dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+        dialog.setSize(400, 200);
+        dialog.setLocationRelativeTo(this);
+
+        DefaultComboBoxModel<Task> srcModel = new DefaultComboBoxModel<>();
+        DefaultComboBoxModel<Task> dstModel = new DefaultComboBoxModel<>();
+        controller.getTasks().forEach(task -> {
+            srcModel.addElement(task);
+            dstModel.addElement(task);
+        });
+
+        JComboBox<Task> srcCombo = new JComboBox<>(srcModel);
+        JComboBox<Task> dstCombo = new JComboBox<>(dstModel);
+        JTextField descrField = new JTextField();
+
+        srcCombo.setRenderer((list, value, index, isSelected, cellHasFocus) -> {
+            JLabel label = new JLabel();
+            if (value != null) {
+                label.setText(value.getName());
+            }
+            return label;
+        });
+
+        dstCombo.setRenderer((list, value, index, isSelected, cellHasFocus) -> {
+            JLabel label = new JLabel();
+            if (value != null) {
+                label.setText(value.getName());
+            }
+            return label;
+        });
+
+        // Set default source to selected task
+        srcCombo.setSelectedItem(selectedTask);
+
+        JButton swapButton = new JButton("Zamień");
+        swapButton.addActionListener(e -> {
+            Task temp = (Task) srcCombo.getSelectedItem();
+            srcCombo.setSelectedItem(dstCombo.getSelectedItem());
+            dstCombo.setSelectedItem(temp);
+        });
+
+        JButton okButton = new JButton("OK");
+        JButton cancelButton = new JButton("Anuluj");
+
+        okButton.addActionListener(e -> {
+            Task src = (Task) srcCombo.getSelectedItem();
+            Task dst = (Task) dstCombo.getSelectedItem();
+            String descr = descrField.getText().trim();
+            if (src != null && dst != null) {
+                controller.addDependency(src, dst, descr);
+                refreshTasks();
+                // Reselect the original selected task
+                String selectedId = selectedTask.getId();
+                for (int i = 0; i < listModel.getSize(); i++) {
+                    if (listModel.getElementAt(i).getId().equals(selectedId)) {
+                        taskList.setSelectedIndex(i);
+                        break;
+                    }
+                }
+                dialog.dispose();
+            }
+        });
+
+        cancelButton.addActionListener(e -> dialog.dispose());
+
+        JPanel panel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.anchor = GridBagConstraints.WEST;
+
+        gbc.gridx = 0; gbc.gridy = 0;
+        panel.add(new JLabel("Zadanie źródłowe:"), gbc);
+        gbc.gridx = 1; gbc.fill = GridBagConstraints.HORIZONTAL; gbc.weightx = 1.0;
+        panel.add(srcCombo, gbc);
+
+        gbc.gridx = 0; gbc.gridy = 1; gbc.fill = GridBagConstraints.NONE; gbc.weightx = 0;
+        panel.add(new JLabel("Zadanie docelowe:"), gbc);
+        gbc.gridx = 1; gbc.fill = GridBagConstraints.HORIZONTAL; gbc.weightx = 1.0;
+        panel.add(dstCombo, gbc);
+
+        gbc.gridx = 0; gbc.gridy = 2;
+        panel.add(new JLabel("Opis:"), gbc);
+        gbc.gridx = 1;
+        panel.add(descrField, gbc);
+
+        gbc.gridx = 1; gbc.gridy = 3; gbc.fill = GridBagConstraints.NONE; gbc.anchor = GridBagConstraints.EAST;
+        panel.add(swapButton, gbc);
+
+        JPanel buttonPanel = new JPanel(new FlowLayout());
+        buttonPanel.add(okButton);
+        buttonPanel.add(cancelButton);
+
+        dialog.getContentPane().setLayout(new BorderLayout());
+        dialog.getContentPane().add(panel, BorderLayout.CENTER);
+        dialog.getContentPane().add(buttonPanel, BorderLayout.SOUTH);
+
+        dialog.setVisible(true);
+    }
+
+    private void showRemoveDependencyDialog() {
+        Task selectedTask = taskList.getSelectedValue();
+        if (selectedTask == null) {
+            JOptionPane.showMessageDialog(this, "Wybierz zadanie najpierw.", "Nie wybrano zadania", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        List<Dependency> dependencies = selectedTask.getDependencies();
+        if (dependencies.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Wybrane zadanie nie ma powiązań.", "Brak powiązań", JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+
+        JDialog dialog = new JDialog(this, "Usuń powiązanie", true);
+        dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+        dialog.setSize(400, 200);
+        dialog.setLocationRelativeTo(this);
+
+        DefaultListModel<Dependency> depListModel = new DefaultListModel<>();
+        dependencies.forEach(depListModel::addElement);
+        JList<Dependency> depList = new JList<>(depListModel);
+        depList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        depList.setCellRenderer((list, value, index, isSelected, cellHasFocus) -> {
+            String srcName = value.getSrc() != null ? value.getSrc().getName() : "";
+            String dstName = value.getDst() != null ? value.getDst().getName() : "";
+            String descr = value.getName() != null ? value.getName() : "";
+            JLabel label = new JLabel(srcName + " -> " + dstName + " (" + descr + ")");
+            if (isSelected) {
+                label.setOpaque(true);
+                label.setBackground(list.getSelectionBackground());
+                label.setForeground(list.getSelectionForeground());
+            }
+            return label;
+        });
+
+        JButton removeButton = new JButton("Usuń");
+        JButton cancelButton = new JButton("Anuluj");
+
+        removeButton.addActionListener(e -> {
+            Dependency selectedDep = depList.getSelectedValue();
+            if (selectedDep != null) {
+                controller.removeDependency(selectedDep);
+                refreshTasks();
+                // Reselect the original selected task
+                String selectedId = selectedTask.getId();
+                for (int i = 0; i < listModel.getSize(); i++) {
+                    if (listModel.getElementAt(i).getId().equals(selectedId)) {
+                        taskList.setSelectedIndex(i);
+                        break;
+                    }
+                }
+                dialog.dispose();
+            }
+        });
+
+        cancelButton.addActionListener(e -> dialog.dispose());
+
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.add(new JScrollPane(depList), BorderLayout.CENTER);
+
+        JPanel buttonPanel = new JPanel(new FlowLayout());
+        buttonPanel.add(removeButton);
+        buttonPanel.add(cancelButton);
+
+        dialog.getContentPane().setLayout(new BorderLayout());
+        dialog.getContentPane().add(panel, BorderLayout.CENTER);
+        dialog.getContentPane().add(buttonPanel, BorderLayout.SOUTH);
+
+        dialog.setVisible(true);
     }
 }

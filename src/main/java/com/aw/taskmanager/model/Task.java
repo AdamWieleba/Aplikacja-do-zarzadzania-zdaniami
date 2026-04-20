@@ -29,8 +29,8 @@ public class Task {
         this.name = name;
         this.descr = description;
         this.difficultyStr = difficultyStr;
-        this.difficultyDbl = difficultyDbl;
-        this.importance = importance;
+        this.difficultyDbl = (difficultyDbl != null) ? difficultyDbl : 0.0;
+        this.importance = (importance != null) ? importance : 0;
         this.notes = notes;
         this.isArchived = isArchived;
         this.id = UUID.randomUUID().toString().replace("-", "");  

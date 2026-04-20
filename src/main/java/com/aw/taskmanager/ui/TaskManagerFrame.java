@@ -8,6 +8,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class TaskManagerFrame extends JFrame {
@@ -16,6 +18,7 @@ public class TaskManagerFrame extends JFrame {
     private final DefaultListModel<Task> listModel = new DefaultListModel<>();
     private final JList<Task> taskList = new JList<>(listModel);
     private final JEditorPane detailsArea = new JEditorPane();
+    private int lastSortOption = 0; // 0 - Nazwa, 1 - Trudność, 2 - Ważność
 
     public TaskManagerFrame(TaskController controller) {
         super("Task Manager");
@@ -34,6 +37,14 @@ public class TaskManagerFrame extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(700, 450);
         setLocationRelativeTo(null);
+
+        JComboBox<String> sortCombo = new JComboBox<>(
+            new String[]{"Nazwa", "Trudność", "Ważność"}
+        );
+        sortCombo.setSelectedIndex(lastSortOption);
+        sortCombo.addActionListener(e -> {
+            sortTaskList(sortCombo.getSelectedIndex());
+        });
 
         taskList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         taskList.setCellRenderer((list, value, index, isSelected, cellHasFocus) -> {
@@ -73,6 +84,8 @@ public class TaskManagerFrame extends JFrame {
         removeDependencyButton.addActionListener(e -> showRemoveDependencyDialog());
 
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        buttonPanel.add(new JLabel("Sortuj:"));
+        buttonPanel.add(sortCombo);
         buttonPanel.add(addButton);
         buttonPanel.add(editButton);
         buttonPanel.add(deleteButton);
@@ -97,6 +110,7 @@ public class TaskManagerFrame extends JFrame {
         listModel.clear();
         List<Task> tasks = controller.getTasks();
         tasks.forEach(listModel::addElement);
+        sortTaskList(lastSortOption); // Ponownie sortuj przy odświeżaniu
         updateButtons();
     }
 
@@ -529,4 +543,33 @@ public class TaskManagerFrame extends JFrame {
 
         dialog.setVisible(true);
     }
+
+    private void sortTaskList(int sortOption) {
+        List<Task> tasks = new ArrayList<>();
+        
+        for (int i = 0; i < listModel.size(); i++) {
+            tasks.add(listModel.get(i));
+        }
+        
+        switch (sortOption) {
+            case 0: // Nazwa
+                tasks.sort(Comparator.comparing(Task::getName));
+                break;
+            case 1: // Trudność
+                tasks.sort(Comparator.comparingDouble(Task::getDifficultyDbl)
+                        .thenComparing(Task::getName)); // thenComparing na wypadek równych wartości
+                break;
+            case 2: // Ważność
+                tasks.sort(Comparator.comparingInt(Task::getImportance)
+                        .thenComparing(Task::getName).reversed()); // reversed żeby ważniejsze były wyżej
+                break;
+        }
+        
+        lastSortOption = sortOption;
+        listModel.clear();
+        for (Task task : tasks) {
+            listModel.addElement(task);
+        }
+    }
+
 }

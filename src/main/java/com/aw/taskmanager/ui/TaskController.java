@@ -24,13 +24,13 @@ public class TaskController {
         return Collections.unmodifiableList(tasks);
     }
 
-    public Task createTask(String name, String descr, String difficultyStr, Double difficultyDbl, Integer priority, String notes, boolean archived) {
+    public Task createTask(String name, String descr, String difficultyStr, Double difficultyDbl, Integer importance, String notes, boolean archived) {
         Task task = new TaskBuilder()
             .name(makeTitle(name))
             .descr(descr)
             .difficultyStr(difficultyStr)
             .difficultyDbl(difficultyDbl)
-            .priority(priority)
+            .importance(importance)
             .notes(notes)
             .isArchived(archived)
             .build();
@@ -38,14 +38,14 @@ public class TaskController {
         return task;
     }
 
-    public boolean updateTask(String id, String name, String descr, String difficultyStr, Double difficultyDbl, Integer priority, String notes, boolean archived) {
+    public boolean updateTask(String id, String name, String descr, String difficultyStr, Double difficultyDbl, Integer importance, String notes, boolean archived) {
         Optional<Task> existing = findTaskById(id);
         existing.ifPresent(task -> new TaskBuilder(task)
             .name(makeTitle(name))
             .descr(descr)
             .difficultyStr(difficultyStr)
             .difficultyDbl(difficultyDbl)
-            .priority(priority)
+            .importance(importance)
             .notes(notes)
             .isArchived(archived)
             .build());

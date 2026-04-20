@@ -121,8 +121,8 @@ public class TaskManagerFrame extends JFrame {
                 .append(" &nbsp;(")
                 .append(formatDifficultyDbl(task.getDifficultyDbl()))
                 .append(" na 5)</p>");
-        sb.append("<p><strong>Priorytet:</strong> ")
-                .append(task.getPriority()).append("</p>");
+        sb.append("<p><strong>Ważność:</strong> ")
+                .append(task.getImportance()).append("</p>");
         sb.append("<p><strong>Notatki:</strong> <br/>")
                 .append(escapeHtmlWithBreaks(task.getNotes())).append("</p>");
         sb.append(renderDependenciesSection(task.getDependencies()));
@@ -205,7 +205,7 @@ public class TaskManagerFrame extends JFrame {
         JScrollPane descrScroll = new JScrollPane(descrArea);
         JTextField difficultyStrField = new JTextField();
         JSpinner difficultyDblSpinner = new JSpinner(new SpinnerNumberModel(0.0, 0.0, 5.0, 0.5));
-        JTextField priorityField = new JTextField();
+        JTextField importanceField = new JTextField();
         JTextArea notesArea = new JTextArea(3, 20);
         notesArea.setLineWrap(true);
         notesArea.setWrapStyleWord(true);
@@ -216,7 +216,7 @@ public class TaskManagerFrame extends JFrame {
             descrArea.setText(taskToEdit.getDescr());
             difficultyStrField.setText(taskToEdit.getDifficultyStr());
             difficultyDblSpinner.setValue(taskToEdit.getDifficultyDbl() != null ? taskToEdit.getDifficultyDbl() : 0.0);
-            priorityField.setText(String.valueOf(taskToEdit.getPriority()));
+            importanceField.setText(String.valueOf(taskToEdit.getImportance()));
             notesArea.setText(taskToEdit.getNotes());
         }
 
@@ -224,7 +224,7 @@ public class TaskManagerFrame extends JFrame {
         JButton cancelButton = new JButton("Anuluj");
 
         okButton.addActionListener(e -> {
-            int priority = parsePriority(priorityField.getText());
+            int importance = parseImportance(importanceField.getText());
             double difficultyDbl = ((Number) difficultyDblSpinner.getValue()).doubleValue();
             if (editMode) {
                 controller.updateTask(
@@ -233,7 +233,7 @@ public class TaskManagerFrame extends JFrame {
                         descrArea.getText().stripTrailing(),
                         difficultyStrField.getText().stripTrailing(),
                         difficultyDbl,
-                        priority,
+                        importance,
                         notesArea.getText().stripTrailing(),
                         taskToEdit.isArchived());
             } else {
@@ -242,7 +242,7 @@ public class TaskManagerFrame extends JFrame {
                         descrArea.getText().stripTrailing(),
                         difficultyStrField.getText().stripTrailing(),
                         difficultyDbl,
-                        priority,
+                        importance,
                         notesArea.getText().stripTrailing(),
                         false);
             }
@@ -278,9 +278,9 @@ public class TaskManagerFrame extends JFrame {
         panel.add(difficultyDblSpinner, gbc);
 
         gbc.gridx = 0; gbc.gridy = 4;
-        panel.add(new JLabel("Priorytet:"), gbc);
+        panel.add(new JLabel("Ważność:"), gbc);
         gbc.gridx = 1;
-        panel.add(priorityField, gbc);
+        panel.add(importanceField, gbc);
 
         gbc.gridx = 0; gbc.gridy = 5; gbc.fill = GridBagConstraints.NONE; gbc.weightx = 0;
         panel.add(new JLabel("Notatki:"), gbc);
@@ -335,7 +335,7 @@ public class TaskManagerFrame extends JFrame {
         refreshTasks();
     }
 
-    private int parsePriority(String text) {
+    private int parseImportance(String text) {
         try {
             return Integer.parseInt(text.trim());
         } catch (NumberFormatException e) {

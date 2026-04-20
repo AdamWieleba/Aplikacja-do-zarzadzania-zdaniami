@@ -12,7 +12,7 @@ public class Task {
     private String descr;
     private String difficultyStr;
     private Double difficultyDbl;
-    private Integer priority;
+    private Integer importance;
     private String notes;
     private boolean isArchived;
     
@@ -25,12 +25,12 @@ public class Task {
     
     public Task() {} // wymagane przez jaxb
 
-    public Task(String name, String description, String difficultyStr, Double difficultyDbl, Integer priority, String notes, boolean isArchived) {
+    public Task(String name, String description, String difficultyStr, Double difficultyDbl, Integer importance, String notes, boolean isArchived) {
         this.name = name;
         this.descr = description;
         this.difficultyStr = difficultyStr;
         this.difficultyDbl = difficultyDbl;
-        this.priority = priority;
+        this.importance = importance;
         this.notes = notes;
         this.isArchived = isArchived;
         this.id = UUID.randomUUID().toString().replace("-", "");  
@@ -87,11 +87,11 @@ public class Task {
         this.difficultyDbl = difficultyDbl;
     }
     
-    public Integer getPriority() {
-        return priority;
+    public Integer getImportance() {
+        return importance;
     }
-    public void setPriority(Integer priority) {
-        this.priority = priority;
+    public void setImportance(Integer importance) {
+        this.importance = importance;
     }
     
     public String getNotes() {

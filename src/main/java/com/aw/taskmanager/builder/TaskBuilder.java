@@ -35,8 +35,8 @@ public class TaskBuilder {
         return this;
     }
 
-    public TaskBuilder priority(Integer priority) {
-        task.setPriority(priority);
+    public TaskBuilder importance(Integer importance) {
+        task.setImportance(importance);
         return this;
     }
 

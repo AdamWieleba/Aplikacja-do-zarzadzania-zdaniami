@@ -35,7 +35,7 @@ public class TaskManagerFrame extends JFrame {
 
     private void initUI() {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(700, 450);
+        setSize(850, 550);
         setLocationRelativeTo(null);
 
         JComboBox<String> sortCombo = new JComboBox<>(
@@ -240,6 +240,7 @@ public class TaskManagerFrame extends JFrame {
         okButton.addActionListener(e -> {
             int importance = parseImportance(importanceField.getText());
             double difficultyDbl = ((Number) difficultyDblSpinner.getValue()).doubleValue();
+            String taskId;
             if (editMode) {
                 controller.updateTask(
                         taskToEdit.getId(),
@@ -250,17 +251,20 @@ public class TaskManagerFrame extends JFrame {
                         importance,
                         notesArea.getText().stripTrailing(),
                         taskToEdit.isArchived());
+                taskId = taskToEdit.getId();
             } else {
-                controller.createTask(
+                taskId = controller.createTask(
                         nameField.getText().stripTrailing(),
                         descrArea.getText().stripTrailing(),
                         difficultyStrField.getText().stripTrailing(),
                         difficultyDbl,
                         importance,
                         notesArea.getText().stripTrailing(),
-                        false);
+                        false)
+                        .getId();
             }
             refreshTasks();
+            selectTaskById(taskId);
             dialog.dispose();
         });
 
@@ -310,15 +314,13 @@ public class TaskManagerFrame extends JFrame {
         dialog.getContentPane().add(buttonPanel, BorderLayout.SOUTH);
 
         dialog.setVisible(true);
+    }
 
-        // Po zamknięciu dialogu - ponownie wybierz zadanie (zarówno po OK jak i Anuluj)
-        if (editMode && taskToEdit != null) {
-            String taskId = taskToEdit.getId();
-            for (int i = 0; i < listModel.getSize(); i++) {
-                if (listModel.getElementAt(i).getId().equals(taskId)) {
-                    taskList.setSelectedIndex(i);
-                    break;
-                }
+    private void selectTaskById(String taskId) {
+        for (int i = 0; i < listModel.getSize(); i++) {
+            if (listModel.getElementAt(i).getId().equals(taskId)) {
+                taskList.setSelectedIndex(i);
+                break;
             }
         }
     }
@@ -546,6 +548,9 @@ public class TaskManagerFrame extends JFrame {
 
     private void sortTaskList(int sortOption) {
         List<Task> tasks = new ArrayList<>();
+
+        int index = taskList.getSelectedIndex();
+        String taskId = (index >= 0) ? listModel.get(index).getId() : null;
         
         for (int i = 0; i < listModel.size(); i++) {
             tasks.add(listModel.get(i));
@@ -570,6 +575,8 @@ public class TaskManagerFrame extends JFrame {
         for (Task task : tasks) {
             listModel.addElement(task);
         }
+        
+        selectTaskById(taskId);
     }
 
 }

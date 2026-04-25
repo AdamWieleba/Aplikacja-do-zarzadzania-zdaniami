@@ -86,6 +86,7 @@ public class TaskDialog {
 
         cancelButton.addActionListener(e -> dialog.dispose());
 
+        // nie można zrobić poniższego formatowania automatycznie poprzez JOptionPane.showConfirmDialog(...), bo wtedy "Enter" zamyka dialog zamiast dodać nową linię w opisie, notatkach itd.
         JPanel panel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5);

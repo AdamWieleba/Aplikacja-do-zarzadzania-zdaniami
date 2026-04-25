@@ -152,13 +152,13 @@ public class TaskManagerFrame extends JFrame {
         StringBuilder sb = new StringBuilder();
         sb.append("<p><strong>Powiązania:</strong></p>");
         sb.append("<div style='margin-left:6px;'>");
-        for (Dependency dp : dependencies) {
-            String srcName = dp.getSrc() != null ? escapeHtml(dp.getSrc().getName()) : "";
-            String dstName = dp.getDst() != null ? escapeHtml(dp.getDst().getName()) : "";
+        for (Dependency dep : dependencies) {
+            String srcName = dep.getSrc() != null ? escapeHtml(dep.getSrc().getName()) : "";
+            String dstName = dep.getDst() != null ? escapeHtml(dep.getDst().getName()) : "";
             sb.append("<p style='margin:4px 0;'><strong>")
-                    .append(srcName).append(" </strong> -> <strong> ").append(dstName)
+                    .append(srcName).append("</strong> -> <strong>").append(dstName)
                     .append("</strong><br/>")
-                    .append(escapeHtmlWithBreaks(dp.getName()))
+                    .append(escapeHtmlWithBreaks(dep.getName()))
                     .append("</p>");
         }
         sb.append("</div>");

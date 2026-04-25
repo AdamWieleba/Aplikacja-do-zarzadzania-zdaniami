@@ -49,14 +49,14 @@ public class Task {
         return dependencies;
     }
     
-    public void addDependency(Dependency dp) {
-        dp.getSrc().dependencies.add(dp);
-        dp.getDst().dependencies.add(dp);
+    public void addDependency(Dependency dep) {
+        dep.getSrc().dependencies.add(dep);
+        dep.getDst().dependencies.add(dep);
     }
     
-    public void removeDependency(Dependency dp) {
-        dp.getSrc().dependencies.remove(dp);
-        dp.getDst().dependencies.remove(dp);
+    public void removeDependency(Dependency dep) {
+        dep.getSrc().dependencies.remove(dep);
+        dep.getDst().dependencies.remove(dep);
     }
     
     public String getName() {

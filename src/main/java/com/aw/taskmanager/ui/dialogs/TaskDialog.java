@@ -21,7 +21,7 @@ public class TaskDialog {
         this.utils = new utilsUI(controller, listModel, taskList, parentFrame);
     }
 
-    public void showTaskDialog(Task taskToEdit, int lastSortOption) {
+    public void showTaskDialog(Task taskToEdit, int lastSortOption, boolean showArchived) {
         boolean editMode = taskToEdit != null;
         JDialog dialog = new JDialog(parentFrame, editMode ? "Edytuj zadanie" : "Dodaj zadanie", true);
         dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
@@ -79,7 +79,7 @@ public class TaskDialog {
                         false)
                         .getId();
             }
-            refreshTasks(lastSortOption);
+            refreshTasks(lastSortOption, showArchived);
             selectTaskById(taskId);
             dialog.dispose();
         });
@@ -133,16 +133,16 @@ public class TaskDialog {
         dialog.setVisible(true);
     }
 
-    public void showAddDialog(int lastSortOption) {
-        showTaskDialog(null, lastSortOption);
+    public void showAddDialog(int lastSortOption, boolean showArchived) {
+        showTaskDialog(null, lastSortOption, showArchived);
     }
 
-    public void showEditDialog(int lastSortOption) {
+    public void showEditDialog(int lastSortOption, boolean showArchived) {
         Task task = taskList.getSelectedValue();
         if (task == null) {
             return;
         }
-        showTaskDialog(task, lastSortOption);
+        showTaskDialog(task, lastSortOption, showArchived);
     }
 
     private int parseImportance(String text) {
@@ -153,8 +153,8 @@ public class TaskDialog {
         }
     }
 
-    private void refreshTasks(int lastSortOption) {
-        utils.refreshTasks(lastSortOption);
+    private void refreshTasks(int lastSortOption, boolean showArchived) {
+        utils.refreshTasks(lastSortOption, showArchived);
     }
 
     private void selectTaskById(String taskId) {

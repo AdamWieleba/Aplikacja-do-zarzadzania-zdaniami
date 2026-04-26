@@ -21,6 +21,10 @@ public class TaskManagerFrame extends JFrame {
     private final TaskDialog taskDialog;
     private final utilsUI utils;
     private int lastSortOption = 0; // 0 - Nazwa, 1 - Trudność, 2 - Ważność
+    private boolean showArchived = false;
+    private JButton archiveButton;
+    private JButton restoreButton;
+    private JButton toggleArchiveButton;
 
     public TaskManagerFrame(TaskController controller) {
         super("Task Manager");
@@ -77,18 +81,20 @@ public class TaskManagerFrame extends JFrame {
         JButton addButton = new JButton("Dodaj");
         JButton editButton = new JButton("Edytuj");
         JButton deleteButton = new JButton("Usuń");
-        JButton archiveButton = new JButton("Archiwizuj");
-        JButton restoreButton = new JButton("Przywróć");
+        archiveButton = new JButton("Archiwizuj");
+        restoreButton = new JButton("Przywróć");
+        toggleArchiveButton = new JButton("Pokaż archiwalne");
         JButton addDependencyButton = new JButton("Dodaj powiązanie");
         JButton removeDependencyButton = new JButton("Usuń powiązanie");
 
-        addButton.addActionListener(e -> taskDialog.showAddDialog(lastSortOption));
-        editButton.addActionListener(e -> taskDialog.showEditDialog(lastSortOption));
+        addButton.addActionListener(e -> taskDialog.showAddDialog(lastSortOption, showArchived));
+        editButton.addActionListener(e -> taskDialog.showEditDialog(lastSortOption, showArchived));
         deleteButton.addActionListener(e -> deleteSelectedTask());
         archiveButton.addActionListener(e -> archiveSelectedTask(true));
         restoreButton.addActionListener(e -> archiveSelectedTask(false));
-        addDependencyButton.addActionListener(e -> depDialog.showAddDependencyDialog(lastSortOption));
-        removeDependencyButton.addActionListener(e -> depDialog.showRemoveDependencyDialog(lastSortOption));
+        toggleArchiveButton.addActionListener(e -> toggleArchiveView());
+        addDependencyButton.addActionListener(e -> depDialog.showAddDependencyDialog(lastSortOption, showArchived));
+        removeDependencyButton.addActionListener(e -> depDialog.showRemoveDependencyDialog(lastSortOption, showArchived));
 
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         buttonPanel.add(new JLabel("Sortuj:"));
@@ -98,6 +104,7 @@ public class TaskManagerFrame extends JFrame {
         buttonPanel.add(deleteButton);
         buttonPanel.add(archiveButton);
         buttonPanel.add(restoreButton);
+        buttonPanel.add(toggleArchiveButton);
         buttonPanel.add(addDependencyButton);
         buttonPanel.add(removeDependencyButton);
 
@@ -110,6 +117,19 @@ public class TaskManagerFrame extends JFrame {
         getContentPane().add(buttonPanel, BorderLayout.NORTH);
         getContentPane().add(splitPane, BorderLayout.CENTER);
 
+        updateButtonsVisibility();
+    }
+
+    private void toggleArchiveView() {
+        showArchived = !showArchived;
+        toggleArchiveButton.setText(showArchived ? "Pokaż zwykłe" : "Pokaż archiwalne");
+        refreshTasks();
+        updateButtonsVisibility();
+    }
+
+    private void updateButtonsVisibility() {
+        archiveButton.setVisible(!showArchived);
+        restoreButton.setVisible(showArchived);
         updateButtons();
     }
 
@@ -223,7 +243,7 @@ public class TaskManagerFrame extends JFrame {
     }
 
     private void refreshTasks() {
-        utils.refreshTasks(lastSortOption);
+        utils.refreshTasks(lastSortOption, showArchived);
     }
 
     private void sortTaskList(int sortOption) {

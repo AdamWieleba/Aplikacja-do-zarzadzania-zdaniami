@@ -23,7 +23,7 @@ public class DependencyDialog {
         this.utils = new utilsUI(controller, listModel, taskList, parentFrame);
     }
 
-    public void showAddDependencyDialog(int lastSortOption) {
+    public void showAddDependencyDialog(int lastSortOption, boolean showArchived) {
         Task selectedTask = taskList.getSelectedValue();
         if (selectedTask == null) {
             JOptionPane.showMessageDialog(parentFrame, "Wybierz zadanie najpierw.", "Brak wyboru", JOptionPane.WARNING_MESSAGE);
@@ -81,7 +81,7 @@ public class DependencyDialog {
             String descr = descrField.getText().trim();
             if (src != null && dst != null) {
                 controller.addDependency(src, dst, descr);
-                refreshTasks(lastSortOption);
+                refreshTasks(lastSortOption, showArchived);
                 selectTaskById(selectedTask.getId());
                 dialog.dispose();
             }
@@ -123,7 +123,7 @@ public class DependencyDialog {
         dialog.setVisible(true);
     }
 
-    public void showRemoveDependencyDialog(int lastSortOption) {
+    public void showRemoveDependencyDialog(int lastSortOption, boolean showArchived) {
         Task selectedTask = taskList.getSelectedValue();
         if (selectedTask == null) {
             JOptionPane.showMessageDialog(parentFrame, "Wybierz zadanie najpierw.", "Nie wybrano zadania", JOptionPane.WARNING_MESSAGE);
@@ -165,7 +165,7 @@ public class DependencyDialog {
             Dependency selectedDep = depList.getSelectedValue();
             if (selectedDep != null) {
                 controller.removeDependency(selectedDep);
-                refreshTasks(lastSortOption);
+                refreshTasks(lastSortOption, showArchived);
                 selectTaskById(selectedTask.getId());
                 dialog.dispose();
             }
@@ -187,8 +187,8 @@ public class DependencyDialog {
         dialog.setVisible(true);
     }
 
-    private void refreshTasks(int lastSortOption) {
-        utils.refreshTasks(lastSortOption);
+    private void refreshTasks(int lastSortOption, boolean showArchived) {
+        utils.refreshTasks(lastSortOption, showArchived);
     }
 
     private void selectTaskById(String taskId) {

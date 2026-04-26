@@ -26,16 +26,18 @@ public class utilsUI {
     public void updateButtons() {
         boolean selected = taskList.getSelectedValue() != null;
         for (Component comp : ((JPanel) parentFrame.getContentPane().getComponent(0)).getComponents()) {
-            if (comp instanceof JButton button && !"Dodaj".equals(button.getText())) {
+            if (comp instanceof JButton button && !"Dodaj".equals(button.getText()) && !"Pokaż archiwalne".equals(button.getText()) && !"Pokaż zwykłe".equals(button.getText())) {
                 button.setEnabled(selected);
             }
         }
     }
 
-    public void refreshTasks(int lastSortOption) {
+    public void refreshTasks(int lastSortOption, boolean showArchived) {
         listModel.clear();
         List<Task> tasks = controller.getTasks();
-        tasks.forEach(listModel::addElement);
+        tasks.stream()
+            .filter(task -> task.isArchived() == showArchived)
+            .forEach(listModel::addElement);
         sortTaskList(lastSortOption); // Ponownie sortuj przy odświeżaniu
         updateButtons();
     }

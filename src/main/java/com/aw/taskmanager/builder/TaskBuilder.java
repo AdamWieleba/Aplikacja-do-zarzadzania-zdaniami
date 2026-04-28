@@ -60,6 +60,11 @@ public class TaskBuilder {
         return this;
     }
 
+    public TaskBuilder deadline(String deadline) {
+        task.setDeadline(deadline);
+        return this;
+    }
+
     public Task build() {
         return task;
     }

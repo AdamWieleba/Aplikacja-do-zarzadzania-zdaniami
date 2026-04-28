@@ -65,7 +65,8 @@ public class TaskDAOTest {
         Integer importance = 1;
         String notes = descr;
         boolean isArchived = false;
-        return new Task(name, descr, difficultyStr, difficultyDbl, importance, notes, isArchived);
+        String deadline = "2026.01.01 23:59";
+        return new Task(name, descr, difficultyStr, difficultyDbl, importance, notes, isArchived, deadline);
     }
 
     private static Stream<Arguments> daoProvider() {

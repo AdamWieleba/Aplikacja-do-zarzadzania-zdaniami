@@ -32,6 +32,7 @@ public class TaskDialog {
         JTextArea descrArea = new JTextArea(3, 20);
         descrArea.setLineWrap(true);
         descrArea.setWrapStyleWord(true);
+        JTextField deadlineField = new JTextField();
         JScrollPane descrScroll = new JScrollPane(descrArea);
         JTextField difficultyStrField = new JTextField();
         JSpinner difficultyDblSpinner = new JSpinner(new SpinnerNumberModel(0.0, 0.0, 5.0, 0.5));
@@ -44,6 +45,7 @@ public class TaskDialog {
         if (editMode) {
             nameField.setText(taskToEdit.getName());
             descrArea.setText(taskToEdit.getDescr());
+            deadlineField.setText(taskToEdit.getDeadline());
             difficultyStrField.setText(taskToEdit.getDifficultyStr());
             difficultyDblSpinner.setValue(taskToEdit.getDifficultyDbl() != null ? taskToEdit.getDifficultyDbl() : 0.0);
             importanceField.setText(String.valueOf(taskToEdit.getImportance()));
@@ -66,7 +68,8 @@ public class TaskDialog {
                         difficultyDbl,
                         importance,
                         notesArea.getText().stripTrailing(),
-                        taskToEdit.isArchived());
+                        taskToEdit.isArchived(),
+                        deadlineField.getText().stripTrailing());
                 taskId = taskToEdit.getId();
             } else {
                 taskId = controller.createTask(
@@ -76,7 +79,8 @@ public class TaskDialog {
                         difficultyDbl,
                         importance,
                         notesArea.getText().stripTrailing(),
-                        false)
+                        false,
+                        deadlineField.getText().stripTrailing())
                         .getId();
             }
             refreshTasks(lastSortOption, showArchived);
@@ -92,32 +96,38 @@ public class TaskDialog {
         gbc.insets = new Insets(5, 5, 5, 5);
         gbc.anchor = GridBagConstraints.WEST;
 
-        gbc.gridx = 0; gbc.gridy = 0;
+        int position = 0;
+        gbc.gridx = 0; gbc.gridy = position++;
         panel.add(new JLabel("Nazwa:"), gbc);
         gbc.gridx = 1; gbc.fill = GridBagConstraints.HORIZONTAL; gbc.weightx = 1.0;
         panel.add(nameField, gbc);
 
-        gbc.gridx = 0; gbc.gridy = 1; gbc.fill = GridBagConstraints.NONE; gbc.weightx = 0;
+        gbc.gridx = 0; gbc.gridy = position++; gbc.fill = GridBagConstraints.NONE; gbc.weightx = 0;
         panel.add(new JLabel("Opis:"), gbc);
         gbc.gridx = 1; gbc.fill = GridBagConstraints.BOTH; gbc.weightx = 1.0; gbc.weighty = 0.5;
         panel.add(descrScroll, gbc);
 
-        gbc.gridx = 0; gbc.gridy = 2; gbc.fill = GridBagConstraints.NONE; gbc.weightx = 0; gbc.weighty = 0;
+        gbc.gridx = 0; gbc.gridy = position++;
+        panel.add(new JLabel("Ostateczny termin:"), gbc);
+        gbc.gridx = 1; gbc.fill = GridBagConstraints.HORIZONTAL; gbc.weightx = 1.0;
+        panel.add(deadlineField, gbc);
+
+        gbc.gridx = 0; gbc.gridy = position++; gbc.fill = GridBagConstraints.NONE; gbc.weightx = 0; gbc.weighty = 0;
         panel.add(new JLabel("Trudność (tekst):"), gbc);
         gbc.gridx = 1; gbc.fill = GridBagConstraints.HORIZONTAL; gbc.weightx = 1.0;
         panel.add(difficultyStrField, gbc);
 
-        gbc.gridx = 0; gbc.gridy = 3;
+        gbc.gridx = 0; gbc.gridy = position++;
         panel.add(new JLabel("Trudność (0-5, co 0.5):"), gbc);
         gbc.gridx = 1;
         panel.add(difficultyDblSpinner, gbc);
 
-        gbc.gridx = 0; gbc.gridy = 4;
+        gbc.gridx = 0; gbc.gridy = position++;
         panel.add(new JLabel("Ważność:"), gbc);
         gbc.gridx = 1;
         panel.add(importanceField, gbc);
 
-        gbc.gridx = 0; gbc.gridy = 5; gbc.fill = GridBagConstraints.NONE; gbc.weightx = 0;
+        gbc.gridx = 0; gbc.gridy = position++; gbc.fill = GridBagConstraints.NONE; gbc.weightx = 0;
         panel.add(new JLabel("Notatki:"), gbc);
         gbc.gridx = 1; gbc.fill = GridBagConstraints.BOTH; gbc.weightx = 1.0; gbc.weighty = 0.5;
         panel.add(notesScroll, gbc);

@@ -15,6 +15,7 @@ public class Task {
     private Integer importance;
     private String notes;
     private boolean isArchived;
+    private String deadline;
     
     @XmlElementWrapper(name = "dependencies")
     @XmlElement(name = "dependency")
@@ -25,7 +26,7 @@ public class Task {
     
     public Task() {} // wymagane przez jaxb
 
-    public Task(String name, String description, String difficultyStr, Double difficultyDbl, Integer importance, String notes, boolean isArchived) {
+    public Task(String name, String description, String difficultyStr, Double difficultyDbl, Integer importance, String notes, boolean isArchived, String deadline) {
         this.name = name;
         this.descr = description;
         this.difficultyStr = difficultyStr;
@@ -33,6 +34,7 @@ public class Task {
         this.importance = (importance != null) ? importance : 0;
         this.notes = notes;
         this.isArchived = isArchived;
+        this.deadline = (deadline != null) ? deadline : "";
         this.id = UUID.randomUUID().toString().replace("-", "");  
     }
     
@@ -106,6 +108,13 @@ public class Task {
     }
     public void setArchived(boolean isArchived) {
         this.isArchived = isArchived;
+    }
+    
+    public String getDeadline() {
+        return deadline;
+    }
+    public void setDeadline(String deadline) {
+        this.deadline = deadline;
     }
 
     @Override

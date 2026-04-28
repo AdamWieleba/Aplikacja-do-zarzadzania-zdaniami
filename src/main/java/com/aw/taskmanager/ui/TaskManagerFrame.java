@@ -46,7 +46,7 @@ public class TaskManagerFrame extends JFrame {
 
     private void initUI() {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(850, 550);
+        setSize(900, 550);
         setLocationRelativeTo(null);
 
         JComboBox<String> sortCombo = new JComboBox<>(
@@ -148,6 +148,8 @@ public class TaskManagerFrame extends JFrame {
         sb.append("<p style='margin-top:12px;'> ")
                 .append(escapeHtmlWithBreaks(task.getDescr())).append("</p>");
         sb.append("<hr style='margin:18px 0 0 0;'>");
+        sb.append("<p><strong>Ostateczny termin:</strong> ")
+                .append(escapeHtml(task.getDeadline())).append("</p>");
         sb.append("<p><strong>Trudność:</strong>")
                 .append(" &nbsp;")  //spacje nieprzerywane
                 .append(escapeHtml(task.getDifficultyStr()))

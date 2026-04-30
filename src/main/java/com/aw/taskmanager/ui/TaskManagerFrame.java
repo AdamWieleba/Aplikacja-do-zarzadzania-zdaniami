@@ -149,7 +149,9 @@ public class TaskManagerFrame extends JFrame {
                 .append(escapeHtmlWithBreaks(task.getDescr())).append("</p>");
         sb.append("<hr style='margin:18px 0 0 0;'>");
         sb.append("<p><strong>Ostateczny termin:</strong> ")
-                .append(escapeHtml(task.getDeadline())).append("</p>");
+                .append(escapeHtml(task.getDeadline()));
+                addDeadlineMessages(sb, task);
+                sb.append("</p>");
         sb.append("<p><strong>Trudność:</strong>")
                 .append(" &nbsp;")  //spacje nieprzerywane
                 .append(escapeHtml(task.getDifficultyStr()))
@@ -238,6 +240,15 @@ public class TaskManagerFrame extends JFrame {
         }
         controller.setArchived(task.getId(), archive);
         refreshTasks();
+    }
+
+    private void addDeadlineMessages(StringBuilder sb, Task task) {
+        if (!utils.isDateFormatValid(task.getDeadline())) {
+            sb.append("<strong> (niepoprawny format)</strong>");
+        }
+        else if (utils.isAfterDeadline(task.getDeadline()) && !task.isArchived()) {
+            sb.append("<strong> (po terminie)</strong>");
+        }
     }
 
     private void updateButtons() {

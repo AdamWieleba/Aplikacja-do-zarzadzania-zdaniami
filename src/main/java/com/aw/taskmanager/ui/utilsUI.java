@@ -95,7 +95,7 @@ public class utilsUI {
             int minute = Integer.parseInt(parts[4]);
             LocalDateTime deadlineLDT = LocalDateTime.of(year, month, day, hour, minute);
             LocalDateTime now = LocalDateTime.now();
-            return deadlineLDT.isAfter(now);
+            return now.isAfter(deadlineLDT);
         }
         catch (Exception e) {}
         return true;

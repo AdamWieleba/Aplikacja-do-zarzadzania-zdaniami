@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.awt.*;
+import java.time.LocalDateTime;
 
 import com.aw.taskmanager.model.Task;
 
@@ -82,6 +83,43 @@ public class utilsUI {
 
         selectTaskById(taskId);
         return sortOption;
+    }
+
+    public boolean isAfterDeadline(String deadline) {
+        try {
+            String[] parts = deadline.split("[ :.]"); //dzielniki to spacja, dwukropek i kropka
+            int year = Integer.parseInt(parts[0]);
+            int month = Integer.parseInt(parts[1]);
+            int day = Integer.parseInt(parts[2]);
+            int hour = Integer.parseInt(parts[3]);
+            int minute = Integer.parseInt(parts[4]);
+            LocalDateTime deadlineLDT = LocalDateTime.of(year, month, day, hour, minute);
+            LocalDateTime now = LocalDateTime.now();
+            return deadlineLDT.isAfter(now);
+        }
+        catch (Exception e) {}
+        return true;
+    }
+
+    public boolean isDateFormatValid(String datetime) { //poprawny yyyy.mm.dd hh:mm
+        if (datetime == null || datetime.isEmpty()) {
+            return false;
+        }
+        else {
+            try {
+                String[] parts = datetime.split("[ :.]"); //dzielniki to spacja, dwukropek i kropka
+                int year = Integer.parseInt(parts[0]);
+                int month = Integer.parseInt(parts[1]);
+                int day = Integer.parseInt(parts[2]);
+                int hour = Integer.parseInt(parts[3]);
+                int minute = Integer.parseInt(parts[4]);
+                if(year > 2000 && year < 2500 && month >= 1 && month <= 12 && day >= 1 && day <= 31 && hour >= 0 && hour < 24 && minute >= 0 && minute < 60) {
+                    return true;
+                }
+            }
+            catch (Exception e) {}
+            return false;
+        }
     }
     
 }

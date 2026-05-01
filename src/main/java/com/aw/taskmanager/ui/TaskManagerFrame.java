@@ -59,7 +59,7 @@ public class TaskManagerFrame extends JFrame {
 
         taskList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         taskList.setCellRenderer((list, value, index, isSelected, cellHasFocus) -> {
-            JLabel label = new JLabel(value.getName() + (value.isArchived() ? " (archiwalne)" : ""));
+            JLabel label = new JLabel(makeTitle(value));
             if (isSelected) {
                 label.setOpaque(true);
                 label.setBackground(list.getSelectionBackground());
@@ -242,11 +242,36 @@ public class TaskManagerFrame extends JFrame {
         refreshTasks();
     }
 
+    private String makeTitle(Task task) {
+        StringBuilder sb = new StringBuilder();
+
+        switch(lastSortOption) {
+            //case 0 nic nie dodaje bo to nazwa
+            case 1:
+                sb.append("(").append(task.getDifficultyDbl()).append(")   ");
+                break;
+            case 2:
+                sb.append("(").append(task.getImportance()).append(")   ");
+                break;
+        }
+
+        if(task.isArchived()) {
+            sb.append(task.getName())
+            .append("   (archiwalne)");
+        }
+        else if(isAfterDeadline(task)) {
+            sb.append("(po terminie)   ")
+            .append(task.getName());
+        }
+
+        return sb.toString();
+    }
+
     private void addDeadlineMessages(StringBuilder sb, Task task) {
         if (!utils.isDateFormatValid(task.getDeadline())) {
             sb.append("<strong> (niepoprawny format)</strong>");
         }
-        else if (utils.isAfterDeadline(task.getDeadline()) && !task.isArchived()) {
+        else if (isAfterDeadline(task) && !task.isArchived()) {
             sb.append("<strong> (po terminie)</strong>");
         }
     }
@@ -262,5 +287,9 @@ public class TaskManagerFrame extends JFrame {
     private void sortTaskList(int sortOption) {
         this.lastSortOption = sortOption;
         utils.sortTaskList(sortOption);
+    }
+
+    private boolean isAfterDeadline(Task task) {
+        return utils.isAfterDeadline(task.getDeadline());
     }
 }

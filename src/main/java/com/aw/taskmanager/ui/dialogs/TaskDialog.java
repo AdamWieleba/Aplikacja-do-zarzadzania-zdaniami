@@ -2,6 +2,8 @@ package com.aw.taskmanager.ui.dialogs;
 
 import java.awt.*;
 import javax.swing.*;
+import com.toedter.calendar.JDateChooser;
+import java.util.Date;
 
 import com.aw.taskmanager.model.Task;
 import com.aw.taskmanager.ui.TaskController;
@@ -32,7 +34,8 @@ public class TaskDialog {
         JTextArea descrArea = new JTextArea(3, 20);
         descrArea.setLineWrap(true);
         descrArea.setWrapStyleWord(true);
-        JTextField deadlineField = new JTextField();
+        JDateChooser dateChooser = new JDateChooser(new Date());
+        dateChooser.setDateFormatString("yyyy-MM-dd");
         JScrollPane descrScroll = new JScrollPane(descrArea);
         JTextField difficultyStrField = new JTextField();
         JSpinner difficultyDblSpinner = new JSpinner(new SpinnerNumberModel(0.0, 0.0, 5.0, 0.5));
@@ -45,11 +48,13 @@ public class TaskDialog {
         if (editMode) {
             nameField.setText(taskToEdit.getName());
             descrArea.setText(taskToEdit.getDescr());
-            deadlineField.setText(taskToEdit.getDeadline());
+            dateChooser.setDate(taskToEdit.getDeadline());
             difficultyStrField.setText(taskToEdit.getDifficultyStr());
             difficultyDblSpinner.setValue(taskToEdit.getDifficultyDbl() != null ? taskToEdit.getDifficultyDbl() : 0.0);
             importanceField.setText(String.valueOf(taskToEdit.getImportance()));
             notesArea.setText(taskToEdit.getNotes());
+        } else {
+            dateChooser.setDate(new Date());
         }
 
         JButton okButton = new JButton("OK");
@@ -69,7 +74,7 @@ public class TaskDialog {
                         importance,
                         notesArea.getText().stripTrailing(),
                         taskToEdit.isArchived(),
-                        deadlineField.getText().stripTrailing());
+                        dateChooser.getDate());
                 taskId = taskToEdit.getId();
             } else {
                 taskId = controller.createTask(
@@ -80,7 +85,7 @@ public class TaskDialog {
                         importance,
                         notesArea.getText().stripTrailing(),
                         false,
-                        deadlineField.getText().stripTrailing())
+                        dateChooser.getDate())
                         .getId();
             }
             refreshTasks(lastSortOption, showArchived);
@@ -110,7 +115,7 @@ public class TaskDialog {
         gbc.gridx = 0; gbc.gridy = position++;
         panel.add(new JLabel("Ostateczny termin:"), gbc);
         gbc.gridx = 1; gbc.fill = GridBagConstraints.HORIZONTAL; gbc.weightx = 1.0;
-        panel.add(deadlineField, gbc);
+        panel.add(dateChooser, gbc);
 
         gbc.gridx = 0; gbc.gridy = position++; gbc.fill = GridBagConstraints.NONE; gbc.weightx = 0; gbc.weighty = 0;
         panel.add(new JLabel("Trudność (tekst):"), gbc);

@@ -7,6 +7,7 @@ import com.aw.taskmanager.dao.TaskDAO;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,7 +25,7 @@ public class TaskController {
         return Collections.unmodifiableList(tasks);
     }
 
-    public Task createTask(String name, String descr, String difficultyStr, Double difficultyDbl, Integer importance, String notes, boolean archived, String deadline) {
+    public Task createTask(String name, String descr, String difficultyStr, Double difficultyDbl, Integer importance, String notes, boolean archived, Date deadline) {
         Task task = new TaskBuilder()
             .name(makeTitle(name))
             .descr(descr)
@@ -39,7 +40,7 @@ public class TaskController {
         return task;
     }
 
-    public boolean updateTask(String id, String name, String descr, String difficultyStr, Double difficultyDbl, Integer importance, String notes, boolean archived, String deadline) {
+    public boolean updateTask(String id, String name, String descr, String difficultyStr, Double difficultyDbl, Integer importance, String notes, boolean archived, Date deadline) {
         Optional<Task> existing = findTaskById(id);
         existing.ifPresent(task -> new TaskBuilder(task)
             .name(makeTitle(name))

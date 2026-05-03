@@ -4,9 +4,11 @@ import javax.swing.*;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.awt.*;
-import java.time.LocalDateTime;
+import java.text.SimpleDateFormat;
 
 import com.aw.taskmanager.model.Task;
 
@@ -27,7 +29,7 @@ public class utilsUI {
     public void updateButtons() {
         boolean selected = taskList.getSelectedValue() != null;
         for (Component comp : ((JPanel) parentFrame.getContentPane().getComponent(0)).getComponents()) {
-            if (comp instanceof JButton button && !"Dodaj".equals(button.getText()) && !"Pokaż archiwalne".equals(button.getText()) && !"Pokaż zwykłe".equals(button.getText())) {
+            if (comp instanceof JButton button && !List.of("Dodaj", "Pokaż archiwalne", "Pokaż zwykłe", "Pokaż kalendarz").contains(button.getText())) {
                 button.setEnabled(selected);
             }
         }
@@ -85,41 +87,25 @@ public class utilsUI {
         return sortOption;
     }
 
-    public boolean isAfterDeadline(String deadline) {
-        try {
-            String[] parts = deadline.split("[ :.]"); //dzielniki to spacja, dwukropek i kropka
-            int year = Integer.parseInt(parts[0]);
-            int month = Integer.parseInt(parts[1]);
-            int day = Integer.parseInt(parts[2]);
-            int hour = Integer.parseInt(parts[3]);
-            int minute = Integer.parseInt(parts[4]);
-            LocalDateTime deadlineLDT = LocalDateTime.of(year, month, day, hour, minute);
-            LocalDateTime now = LocalDateTime.now();
-            return now.isAfter(deadlineLDT);
+    public boolean isAfterDeadline(Date deadline) {
+        if (deadline == null) {
+            return false;
         }
-        catch (Exception e) {}
-        return true;
+        Calendar deadlineCal = Calendar.getInstance();
+        deadlineCal.setTime(deadline);
+        deadlineCal.set(Calendar.HOUR_OF_DAY, 23);
+        deadlineCal.set(Calendar.MINUTE, 59);
+        deadlineCal.set(Calendar.SECOND, 59);
+        
+        return new Date().after(deadlineCal.getTime());
     }
 
-    public boolean isDateFormatValid(String datetime) { //poprawny yyyy.mm.dd hh:mm
-        if (datetime == null || datetime.isEmpty()) {
-            return false;
+    public String formatDate(Date date) {
+        if (date == null) {
+            return "";
         }
-        else {
-            try {
-                String[] parts = datetime.split("[ :.]"); //dzielniki to spacja, dwukropek i kropka
-                int year = Integer.parseInt(parts[0]);
-                int month = Integer.parseInt(parts[1]);
-                int day = Integer.parseInt(parts[2]);
-                int hour = Integer.parseInt(parts[3]);
-                int minute = Integer.parseInt(parts[4]);
-                if(year > 2000 && year < 2500 && month >= 1 && month <= 12 && day >= 1 && day <= 31 && hour >= 0 && hour < 24 && minute >= 0 && minute < 60) {
-                    return true;
-                }
-            }
-            catch (Exception e) {}
-            return false;
-        }
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        return sdf.format(date);
     }
     
 }

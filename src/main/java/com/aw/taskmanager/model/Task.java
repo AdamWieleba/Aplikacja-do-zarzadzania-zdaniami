@@ -2,6 +2,8 @@ package com.aw.taskmanager.model;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.UUID;
 import jakarta.xml.bind.annotation.*;
 
@@ -15,7 +17,7 @@ public class Task {
     private Integer importance;
     private String notes;
     private boolean isArchived;
-    private String deadline;
+    private Date deadline;
     
     @XmlElementWrapper(name = "dependencies")
     @XmlElement(name = "dependency")
@@ -26,7 +28,7 @@ public class Task {
     
     public Task() {} // wymagane przez jaxb
 
-    public Task(String name, String description, String difficultyStr, Double difficultyDbl, Integer importance, String notes, boolean isArchived, String deadline) {
+    public Task(String name, String description, String difficultyStr, Double difficultyDbl, Integer importance, String notes, boolean isArchived, Date deadline) {
         this.name = name;
         this.descr = description;
         this.difficultyStr = difficultyStr;
@@ -34,7 +36,7 @@ public class Task {
         this.importance = (importance != null) ? importance : 0;
         this.notes = notes;
         this.isArchived = isArchived;
-        this.deadline = (deadline != null) ? deadline : "";
+        this.deadline = deadline;
         this.id = UUID.randomUUID().toString().replace("-", "");  
     }
     
@@ -110,10 +112,15 @@ public class Task {
         this.isArchived = isArchived;
     }
     
-    public String getDeadline() {
+    public Date getDeadline() {
+        if (deadline == null) {
+            Calendar cal = Calendar.getInstance();
+            cal.set(2999, Calendar.JANUARY, 1, 0, 0, 0);
+            return cal.getTime();
+        }
         return deadline;
     }
-    public void setDeadline(String deadline) {
+    public void setDeadline(Date deadline) {
         this.deadline = deadline;
     }
 

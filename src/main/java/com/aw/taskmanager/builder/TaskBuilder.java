@@ -1,5 +1,6 @@
 package com.aw.taskmanager.builder;
 
+import java.util.Date;
 import com.aw.taskmanager.model.Task;
 import com.aw.taskmanager.model.Dependency;
 
@@ -60,7 +61,7 @@ public class TaskBuilder {
         return this;
     }
 
-    public TaskBuilder deadline(String deadline) {
+    public TaskBuilder deadline(Date deadline) {
         task.setDeadline(deadline);
         return this;
     }

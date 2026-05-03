@@ -6,9 +6,14 @@ import com.aw.taskmanager.ui.dialogs.DependencyDialog;
 import com.aw.taskmanager.ui.dialogs.TaskDialog;
 
 import javax.swing.*;
+
 import java.awt.*;
-import java.awt.event.WindowAdapter; //te dwa importy muszą być osobno
+import java.awt.event.WindowAdapter; //te importy muszą być osobno
 import java.awt.event.WindowEvent;
+import javax.swing.border.EmptyBorder;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class TaskManagerFrame extends JFrame {
@@ -46,7 +51,7 @@ public class TaskManagerFrame extends JFrame {
 
     private void initUI() {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(900, 550);
+        setSize(1100, 550);
         setLocationRelativeTo(null);
 
         JComboBox<String> sortCombo = new JComboBox<>(
@@ -86,6 +91,7 @@ public class TaskManagerFrame extends JFrame {
         toggleArchiveButton = new JButton("Pokaż archiwalne");
         JButton addDependencyButton = new JButton("Dodaj powiązanie");
         JButton removeDependencyButton = new JButton("Usuń powiązanie");
+        JButton showCalendarButton = new JButton("Pokaż kalendarz");
 
         addButton.addActionListener(e -> taskDialog.showAddDialog(lastSortOption, showArchived));
         editButton.addActionListener(e -> taskDialog.showEditDialog(lastSortOption, showArchived));
@@ -95,6 +101,7 @@ public class TaskManagerFrame extends JFrame {
         toggleArchiveButton.addActionListener(e -> toggleArchiveView());
         addDependencyButton.addActionListener(e -> depDialog.showAddDependencyDialog(lastSortOption, showArchived));
         removeDependencyButton.addActionListener(e -> depDialog.showRemoveDependencyDialog(lastSortOption, showArchived));
+        showCalendarButton.addActionListener(e -> openTaskCalendar());
 
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         buttonPanel.add(new JLabel("Sortuj:"));
@@ -107,6 +114,7 @@ public class TaskManagerFrame extends JFrame {
         buttonPanel.add(toggleArchiveButton);
         buttonPanel.add(addDependencyButton);
         buttonPanel.add(removeDependencyButton);
+        buttonPanel.add(showCalendarButton);
 
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
                 new JScrollPane(taskList),
@@ -148,10 +156,12 @@ public class TaskManagerFrame extends JFrame {
         sb.append("<p style='margin-top:12px;'> ")
                 .append(escapeHtmlWithBreaks(task.getDescr())).append("</p>");
         sb.append("<hr style='margin:18px 0 0 0;'>");
-        sb.append("<p><strong>Ostateczny termin:</strong> ")
-                .append(escapeHtml(task.getDeadline()));
-                addDeadlineMessages(sb, task);
-                sb.append("</p>");
+        if (formatDate(task.getDeadline()).compareTo("2998-01-01") < 0) {
+            sb.append("<p><strong>Ostateczny termin:</strong> ")
+                .append(escapeHtml(formatDate(task.getDeadline())))
+                .append(isAfterDeadline(task) && !task.isArchived() ? "<strong> (po terminie)</strong>" : "")
+                .append("</p>");
+        }
         sb.append("<p><strong>Trudność:</strong>")
                 .append(" &nbsp;")  //spacje nieprzerywane
                 .append(escapeHtml(task.getDifficultyStr()))
@@ -216,6 +226,58 @@ public class TaskManagerFrame extends JFrame {
         return String.format("%.1f", difficultyDbl);
     }
 
+    private void openTaskCalendar() {
+        JDialog calendarDialog = new JDialog(this, "Kalendarz zadań", true);
+        JPanel calendarPanel = new JPanel(new GridLayout(0, 7, 5, 5));
+        calendarPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+        
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.HOUR_OF_DAY, 23);
+        cal.set(Calendar.MINUTE, 59);
+        cal.set(Calendar.SECOND, 59);
+        
+        // Przesunięcie do ostatniego poniedziałku
+        while (cal.get(Calendar.DAY_OF_WEEK) != Calendar.MONDAY) {
+            cal.add(Calendar.DAY_OF_MONTH, -1);
+        }
+
+        String[] dayNames = {"Poniedziałek", "Wtorek", "Środa", "Czwartek", "Piątek", "Sobota", "Niedziela"};
+        for (String day : dayNames) {
+            JLabel label = new JLabel(day);
+            label.setFont(new Font(null, Font.BOLD, 12));
+            calendarPanel.add(label);
+        }
+        
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+
+        for (int i = 0; i < 30; i++) {
+            JPanel dayPanel = new JPanel(new BorderLayout());
+            dayPanel.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+
+            JLabel dateLabel = new JLabel(String.valueOf(cal.get(Calendar.DAY_OF_MONTH)));
+            dateLabel.setFont(new Font(null, Font.BOLD, 14));
+            dayPanel.add(dateLabel, BorderLayout.NORTH);
+            
+            StringBuilder tasksText = new StringBuilder("<html>");
+            for (Task task : controller.getTasks()) {
+                if (!task.isArchived() && sdf.format(task.getDeadline()).equals(sdf.format(cal.getTime()))) {
+                    tasksText.append("• ").append(task.getName()).append("<br>");
+                }
+            }
+            tasksText.append("</html>");
+
+            dayPanel.add(new JLabel(tasksText.toString()), BorderLayout.CENTER);
+            
+            calendarPanel.add(dayPanel);
+            cal.add(Calendar.DAY_OF_MONTH, 1);
+        }
+        
+        calendarDialog.add(new JScrollPane(calendarPanel));
+        calendarDialog.setSize(800, 600);
+        calendarDialog.setLocationRelativeTo(this);
+        calendarDialog.setVisible(true);
+    }
+
     private void deleteSelectedTask() {
         Task task = taskList.getSelectedValue();
         if (task == null) {
@@ -260,20 +322,15 @@ public class TaskManagerFrame extends JFrame {
             .append("   (archiwalne)");
         }
         else if(isAfterDeadline(task)) {
-            sb.append("(po terminie)   ")
-            .append(task.getName());
+            sb.append(" !   ")
+            .append(task.getName())
+            .append("    PO TERMINIE");
+        }
+        else {
+            sb.append(task.getName());
         }
 
         return sb.toString();
-    }
-
-    private void addDeadlineMessages(StringBuilder sb, Task task) {
-        if (!utils.isDateFormatValid(task.getDeadline())) {
-            sb.append("<strong> (niepoprawny format)</strong>");
-        }
-        else if (isAfterDeadline(task) && !task.isArchived()) {
-            sb.append("<strong> (po terminie)</strong>");
-        }
     }
 
     private void updateButtons() {
@@ -291,5 +348,9 @@ public class TaskManagerFrame extends JFrame {
 
     private boolean isAfterDeadline(Task task) {
         return utils.isAfterDeadline(task.getDeadline());
+    }
+
+    private String formatDate(Date date) {
+        return utils.formatDate(date);
     }
 }

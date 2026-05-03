@@ -7,6 +7,8 @@ import com.aw.taskmanager.builder.TaskBuilder;
 import java.util.List;
 import java.util.stream.Stream;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -65,7 +67,8 @@ public class TaskDAOTest {
         Integer importance = 1;
         String notes = descr;
         boolean isArchived = false;
-        String deadline = "2026.01.01 23:59";
+        Calendar cal = Calendar.getInstance();
+        Date deadline = cal.getTime();
         return new Task(name, descr, difficultyStr, difficultyDbl, importance, notes, isArchived, deadline);
     }
 

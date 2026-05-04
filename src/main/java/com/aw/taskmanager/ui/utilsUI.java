@@ -76,6 +76,10 @@ public class utilsUI {
                 tasks.sort(Comparator.comparingInt(Task::getImportance)
                         .thenComparing(Task::getName).reversed()); // reversed żeby ważniejsze były wyżej
                 break;
+            case 3: // Termin
+                tasks.sort(Comparator.comparing(Task::getDeadline)
+                        .thenComparing(Task::getName));
+                break;
         }
         
         listModel.clear();

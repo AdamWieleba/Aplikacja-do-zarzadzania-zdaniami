@@ -55,7 +55,7 @@ public class TaskManagerFrame extends JFrame {
         setLocationRelativeTo(null);
 
         JComboBox<String> sortCombo = new JComboBox<>(
-            new String[]{"Nazwa", "Trudność", "Ważność"}
+            new String[]{"Nazwa", "Trudność", "Ważność", "Termin"}
         );
         sortCombo.setSelectedIndex(lastSortOption);
         sortCombo.addActionListener(e -> {
@@ -314,6 +314,12 @@ public class TaskManagerFrame extends JFrame {
                 break;
             case 2:
                 sb.append("(").append(task.getImportance()).append(")   ");
+                break;
+            case 3:
+                Calendar cal = Calendar.getInstance();
+                cal.set(2998, Calendar.JANUARY, 1);
+                if(task.getDeadline().before(cal.getTime())) //nie pokazuj daty dla zadań "bez terminu"
+                    sb.append("(").append(formatDate(task.getDeadline())).append(")   ");
                 break;
         }
 

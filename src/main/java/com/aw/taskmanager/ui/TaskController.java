@@ -55,7 +55,7 @@ public class TaskController {
         return existing.isPresent();
     }
 
-    private String makeTitle(String name) {
+    public String makeTitle(String name) {
         String trimmed = (name == null) ? "" : name.stripTrailing();
         return trimmed.isEmpty() ? "(Bez tytułu)" : trimmed;
     }

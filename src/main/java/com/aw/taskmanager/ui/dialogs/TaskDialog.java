@@ -145,6 +145,7 @@ public class TaskDialog {
         dialog.getContentPane().add(panel, BorderLayout.CENTER);
         dialog.getContentPane().add(buttonPanel, BorderLayout.SOUTH);
 
+        dialog.setMinimumSize(new Dimension(dialog.getWidth(), dialog.getHeight()));
         dialog.setVisible(true);
     }
 

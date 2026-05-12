@@ -51,8 +51,6 @@ public class TaskManagerFrame extends JFrame {
 
     private void initUI() {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(1100, 550);
-        setLocationRelativeTo(null);
 
         JComboBox<String> sortCombo = new JComboBox<>(
             new String[]{"Nazwa", "Trudność", "Ważność", "Termin"}
@@ -125,6 +123,10 @@ public class TaskManagerFrame extends JFrame {
         getContentPane().add(buttonPanel, BorderLayout.NORTH);
         getContentPane().add(splitPane, BorderLayout.CENTER);
 
+        pack(); //automatyczny rozmiar żeby wszystkie przyciski były widoczne
+        setSize(getWidth(), 550);
+        setMinimumSize(new Dimension(getWidth(), getHeight()));
+        setLocationRelativeTo(null);
         updateButtonsVisibility();
     }
 
@@ -274,6 +276,7 @@ public class TaskManagerFrame extends JFrame {
         
         calendarDialog.add(new JScrollPane(calendarPanel));
         calendarDialog.setSize(800, 600);
+        calendarDialog.setMinimumSize(new Dimension(calendarDialog.getWidth(), calendarDialog.getHeight()));
         calendarDialog.setLocationRelativeTo(this);
         calendarDialog.setVisible(true);
     }

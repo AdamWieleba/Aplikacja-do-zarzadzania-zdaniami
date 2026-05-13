@@ -172,8 +172,10 @@ public class TaskManagerFrame extends JFrame {
                 .append(" na 5)</p>");
         sb.append("<p><strong>Ważność:</strong> ")
                 .append(task.getImportance()).append("</p>");
-        sb.append("<p><strong>Notatki:</strong> <br/>")
+        if (task.getNotes() != null && !task.getNotes().trim().isEmpty()) {
+            sb.append("<p><strong>Notatki:</strong> <br/>")
                 .append(escapeHtmlWithBreaks(task.getNotes())).append("</p>");
+        }
         sb.append(renderDependenciesSection(task.getDependencies()));
         sb.append("</body></html>");
 
@@ -183,7 +185,7 @@ public class TaskManagerFrame extends JFrame {
 
     private String renderDependenciesSection(List<Dependency> dependencies) {
         if (dependencies == null || dependencies.isEmpty()) {
-            return "<p><strong>Zależności:</strong> brak</p>";
+            return "";
         }
         StringBuilder sb = new StringBuilder();
         sb.append("<p><strong>Powiązania:</strong></p>");
@@ -287,12 +289,17 @@ public class TaskManagerFrame extends JFrame {
             return;
         }
 
-        int option = JOptionPane.showConfirmDialog(this,
+        String[] options = {"Tak", "Nie"};
+        int option = JOptionPane.showOptionDialog(this,
                 "Usuń zadanie \"" + task.getName() + "\"?",
                 "Potwierdź usunięcie",
-                JOptionPane.YES_NO_OPTION);
-
-        if (option == JOptionPane.YES_OPTION) {
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                options,
+                options[1]); // domyślny przycisk
+        
+        if (option == 0) {
             controller.deleteTask(task.getId());
             refreshTasks();
         }

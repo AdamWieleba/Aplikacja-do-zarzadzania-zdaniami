@@ -118,12 +118,12 @@ public class TaskDialog {
         panel.add(dateChooser, gbc);
 
         gbc.gridx = 0; gbc.gridy = position++; gbc.fill = GridBagConstraints.NONE; gbc.weightx = 0; gbc.weighty = 0;
-        panel.add(new JLabel("Trudność (tekst):"), gbc);
+        panel.add(new JLabel("Trudność (opisowa):"), gbc);
         gbc.gridx = 1; gbc.fill = GridBagConstraints.HORIZONTAL; gbc.weightx = 1.0;
         panel.add(difficultyStrField, gbc);
 
         gbc.gridx = 0; gbc.gridy = position++;
-        panel.add(new JLabel("Trudność (0-5, co 0.5):"), gbc);
+        panel.add(new JLabel("Trudność (0-5):"), gbc);
         gbc.gridx = 1;
         panel.add(difficultyDblSpinner, gbc);
 

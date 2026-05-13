@@ -158,6 +158,33 @@ public class DependencyDialog {
             }
             return label;
         });
+        depList.setCellRenderer((list, value, index, isSelected, cellHasFocus) -> {
+            String srcName = value.getSrc() != null ? value.getSrc().getName() : "";
+            String dstName = value.getDst() != null ? value.getDst().getName() : "";
+            String descr = value.getName() != null ? value.getName() : "";
+            
+            JPanel panel = new JPanel();
+            panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+            
+            JLabel titleLabel = new JLabel(srcName + " -> " + dstName);
+            JLabel descrLabel = new JLabel(descr);
+            JLabel emptyLabel = new JLabel(" "); // odstęp między opisem a tytułem następnego
+            //descrLabel.setFont(descrLabel.getFont().deriveFont(Font.ITALIC, descrLabel.getFont().getSize())); // opcjonalnie: mniejsza, kursywa
+            
+            panel.add(titleLabel);
+            panel.add(descrLabel);
+            panel.add(emptyLabel);
+            
+            if (isSelected) {
+                panel.setOpaque(true);
+                panel.setBackground(list.getSelectionBackground());
+                titleLabel.setForeground(list.getSelectionForeground());
+                descrLabel.setForeground(list.getSelectionForeground());
+                emptyLabel.setForeground(list.getSelectionForeground());
+            }
+            
+            return panel;
+        });
 
         JButton removeButton = new JButton("Usuń");
         JButton cancelButton = new JButton("Anuluj");

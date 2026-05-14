@@ -48,7 +48,7 @@ public class TaskDialog {
         if (editMode) {
             nameField.setText(taskToEdit.getName());
             descrArea.setText(taskToEdit.getDescr());
-            dateChooser.setDate(taskToEdit.getDeadline());
+            dateChooser.setDate(taskToEdit.getDeadlineOrDefault());
             difficultyStrField.setText(taskToEdit.getDifficultyStr());
             difficultyDblSpinner.setValue(taskToEdit.getDifficultyDbl() != null ? taskToEdit.getDifficultyDbl() : 0.0);
             importanceField.setText(String.valueOf(taskToEdit.getImportance()));

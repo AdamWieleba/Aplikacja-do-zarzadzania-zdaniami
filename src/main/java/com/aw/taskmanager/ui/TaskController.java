@@ -26,16 +26,7 @@ public class TaskController {
     }
 
     public Task createTask(String name, String descr, String difficultyStr, Double difficultyDbl, Integer importance, String notes, boolean archived, Date deadline) {
-        Task task = new TaskBuilder()
-            .name(makeTitle(name))
-            .descr(descr)
-            .difficultyStr(difficultyStr)
-            .difficultyDbl(difficultyDbl)
-            .importance(importance)
-            .notes(notes)
-            .isArchived(archived)
-            .deadline(deadline)
-            .build();
+        Task task = new Task(makeTitle(name), descr, difficultyStr, difficultyDbl, importance, notes, archived, deadline);
         tasks.add(task);
         return task;
     }

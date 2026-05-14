@@ -158,9 +158,9 @@ public class TaskManagerFrame extends JFrame {
         sb.append("<p style='margin-top:12px;'> ")
                 .append(escapeHtmlWithBreaks(task.getDescr())).append("</p>");
         sb.append("<hr style='margin:18px 0 0 0;'>");
-        if (formatDate(task.getDeadline()).compareTo("2998-01-01") < 0) {
+        if (formatDate(task.getDeadlineOrDefault()).compareTo("2998-01-01") < 0) {
             sb.append("<p><strong>Ostateczny termin:</strong> ")
-                .append(escapeHtml(formatDate(task.getDeadline())))
+                .append(escapeHtml(formatDate(task.getDeadlineOrDefault())))
                 .append(isAfterDeadline(task) && !task.isArchived() ? "<strong> (po terminie)</strong>" : "")
                 .append("</p>");
         }
@@ -264,7 +264,7 @@ public class TaskManagerFrame extends JFrame {
             
             StringBuilder tasksText = new StringBuilder("<html>");
             for (Task task : controller.getTasks()) {
-                if (!task.isArchived() && sdf.format(task.getDeadline()).equals(sdf.format(cal.getTime()))) {
+                if (!task.isArchived() && sdf.format(task.getDeadlineOrDefault()).equals(sdf.format(cal.getTime()))) {
                     tasksText.append("• ").append(task.getName()).append("<br>");
                 }
             }
@@ -328,8 +328,8 @@ public class TaskManagerFrame extends JFrame {
             case 3:
                 Calendar cal = Calendar.getInstance();
                 cal.set(2998, Calendar.JANUARY, 1);
-                if(task.getDeadline().before(cal.getTime())) //nie pokazuj daty dla zadań "bez terminu"
-                    sb.append("(").append(formatDate(task.getDeadline())).append(")   ");
+                if(task.getDeadlineOrDefault().before(cal.getTime())) //nie pokazuj daty dla zadań "bez terminu"
+                    sb.append("(").append(formatDate(task.getDeadlineOrDefault())).append(")   ");
                 break;
         }
 
@@ -363,7 +363,7 @@ public class TaskManagerFrame extends JFrame {
     }
 
     private boolean isAfterDeadline(Task task) {
-        return utils.isAfterDeadline(task.getDeadline());
+        return utils.isAfterDeadline(task.getDeadlineOrDefault());
     }
 
     private String formatDate(Date date) {

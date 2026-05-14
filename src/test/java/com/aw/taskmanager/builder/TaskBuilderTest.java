@@ -80,6 +80,6 @@ class TaskBuilderTest {
                 .deadline(deadline)
                 .build();
 
-        assertEquals(deadline, task.getDeadline());
+        assertEquals(deadline, task.getDeadlineOrDefault());
     }
 }

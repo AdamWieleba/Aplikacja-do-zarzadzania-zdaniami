@@ -37,7 +37,7 @@ public class Task {
         this.notes = notes;
         this.isArchived = isArchived;
         this.deadline = deadline;
-        this.id = UUID.randomUUID().toString().replace("-", "");  
+        generateId();  
     }
     
     public String getId() {
@@ -113,6 +113,9 @@ public class Task {
     }
     
     public Date getDeadline() {
+        return deadline;
+    }
+    public Date getDeadlineOrDefault() {
         if (deadline == null) {
             Calendar cal = Calendar.getInstance();
             cal.set(2999, Calendar.JANUARY, 1, 0, 0, 0);

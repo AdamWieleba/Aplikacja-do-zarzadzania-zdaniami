@@ -64,7 +64,7 @@ class TaskTest {
     @Test
     void shouldReturnDefaultDeadlineWhenNull() {
         task.setDeadline(null);
-        Date deadline = task.getDeadline();
+        Date deadline = task.getDeadlineOrDefault();
         assertNotNull(deadline);
         // Sprawdź, że to rok 2999
         Calendar cal = Calendar.getInstance();

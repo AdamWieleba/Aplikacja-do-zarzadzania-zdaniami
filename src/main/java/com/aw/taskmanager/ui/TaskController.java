@@ -3,7 +3,7 @@ package com.aw.taskmanager.ui;
 import com.aw.taskmanager.model.Task;
 import com.aw.taskmanager.model.Dependency;
 import com.aw.taskmanager.builder.TaskBuilder;
-import com.aw.taskmanager.dao.TaskDAO;
+import com.aw.taskmanager.dao.TaskDao;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -13,10 +13,10 @@ import java.util.Optional;
 
 public class TaskController {
 
-    private final TaskDAO dao;
+    private final TaskDao dao;
     private final List<Task> tasks = new ArrayList<>();
 
-    public TaskController(TaskDAO dao) {
+    public TaskController(TaskDao dao) {
         this.dao = dao;
         tasks.addAll(dao.loadAll());
     }

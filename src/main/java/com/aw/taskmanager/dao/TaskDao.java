@@ -3,7 +3,7 @@ package com.aw.taskmanager.dao;
 import com.aw.taskmanager.model.Task;
 import java.util.List;
 
-public interface TaskDAO {
+public interface TaskDao {
 
     public void saveAll(List<Task> list);
 

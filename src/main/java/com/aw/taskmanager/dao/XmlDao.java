@@ -7,14 +7,14 @@ import jakarta.xml.bind.*;
 import java.io.File;
 import java.util.List;
 
-public class XmlDAO implements TaskDAO {
+public class XmlDao implements TaskDao {
     private String file;
 
-    public XmlDAO() {
+    public XmlDao() {
         file = "Tasks.xml";
     }
 
-    public XmlDAO(String file) {
+    public XmlDao(String file) {
         this.file = file;
     }
 

@@ -15,13 +15,13 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class TaskDAOTest {
+public class TaskDaoTest {
 
     @ParameterizedTest
     @MethodSource("daoProvider")
-    public void testSaveAll_LoadAll(Class<? extends TaskDAO> DAOclass, String file) throws Exception {
+    public void testSaveAll_LoadAll(Class<? extends TaskDao> DAOclass, String file) throws Exception {
         // given
-        TaskDAO taskDAO = createDAO(DAOclass, file);
+        TaskDao taskDAO = createDAO(DAOclass, file);
         
         Task task1 = new TaskBuilder().name("name1").isArchived(true).build();
         Task task2 = createDefaultTestTask("name2");
@@ -40,9 +40,9 @@ public class TaskDAOTest {
 
     @ParameterizedTest
     @MethodSource("daoProvider")
-    public void testDelete(Class<? extends TaskDAO> DAOclass, String file) throws Exception {
+    public void testDelete(Class<? extends TaskDao> DAOclass, String file) throws Exception {
         // given
-        TaskDAO taskDAO = createDAO(DAOclass, file);
+        TaskDao taskDAO = createDAO(DAOclass, file);
 
         Task task1 = createDefaultTestTask("name1");
         Task task2 = createDefaultTestTask("name2");
@@ -75,13 +75,13 @@ public class TaskDAOTest {
     private static Stream<Arguments> daoProvider() {
         return Stream.of(
             //Arguments.of(TxtDAO.class, "./target/DAOTest.txt")
-            Arguments.of(XmlDAO.class, "./target/DAOTest.txt")
+            Arguments.of(XmlDao.class, "./target/DAOTest.txt")
             //,Arguments.of(.class, "")
         );
     }
     
-    private TaskDAO createDAO(Class<? extends TaskDAO> DAOclass, String file) {
-        TaskDAO instance;
+    private TaskDao createDAO(Class<? extends TaskDao> DAOclass, String file) {
+        TaskDao instance;
         try {
             instance = DAOclass.getDeclaredConstructor(String.class).newInstance(file);
         } catch (Exception e) {

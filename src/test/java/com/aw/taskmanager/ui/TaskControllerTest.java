@@ -1,7 +1,7 @@
 package com.aw.taskmanager.ui;
 
 import com.aw.taskmanager.model.Task;
-import com.aw.taskmanager.dao.XmlDAO;
+import com.aw.taskmanager.dao.XmlDao;
 
 import java.util.Optional;
 
@@ -16,7 +16,7 @@ public class TaskControllerTest {
     
     @BeforeEach
     void setUp() {
-        taskController = new TaskController(new XmlDAO());
+        taskController = new TaskController(new XmlDao());
     }
 
     // makeTitle()

@@ -25,7 +25,7 @@ public class TaskManagerFrame extends JFrame {
     private final DependencyDialog depDialog;
     private final TaskDialog taskDialog;
     private final utilsUI utils;
-    private int lastSortOption = 0; // 0 - Nazwa, 1 - Trudność, 2 - Ważność
+    private int lastSortOption = 0; //Domyślnie alfabetycznie
     private boolean showArchived = false;
     private JButton archiveButton;
     private JButton restoreButton;
@@ -53,7 +53,10 @@ public class TaskManagerFrame extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         JComboBox<String> sortCombo = new JComboBox<>(
-            new String[]{"Nazwa", "Trudność", "Ważność", "Termin"}
+            new String[]{"Nazwa", "Nazwa  (odwrotnie)", 
+                "Trudność  (od najłatwiejszych)", "Trudność  (od najtrudniejszych)", 
+                "Ważność  (od najważniejszych)", "Ważność  (od najmniej ważnych)", 
+                "Termin"}
         );
         sortCombo.setSelectedIndex(lastSortOption);
         sortCombo.addActionListener(e -> {
@@ -315,21 +318,23 @@ public class TaskManagerFrame extends JFrame {
     }
 
     private String makeTitle(Task task) {
-        StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder(" ");
 
         switch(lastSortOption) {
-            //case 0 nic nie dodaje bo to nazwa
-            case 1:
-                sb.append("(").append(task.getDifficultyDbl()).append(")   ");
-                break;
+            //case 0, 1 nic nie dodaje bo to nazwa
             case 2:
-                sb.append("(").append(task.getImportance()).append(")   ");
-                break;
             case 3:
+                sb.append(task.getDifficultyDbl()).append("      ");
+                break;
+            case 4:
+            case 5:
+                sb.append(task.getImportance()).append("      ");
+                break;
+            case 6:
                 Calendar cal = Calendar.getInstance();
                 cal.set(2998, Calendar.JANUARY, 1);
                 if(task.getDeadlineOrDefault().before(cal.getTime())) //nie pokazuj daty dla zadań "bez terminu"
-                    sb.append("(").append(formatDate(task.getDeadlineOrDefault())).append(")   ");
+                    sb.append(formatDate(task.getDeadlineOrDefault())).append("      ");
                 break;
         }
 
@@ -338,9 +343,8 @@ public class TaskManagerFrame extends JFrame {
             .append("   (archiwalne)");
         }
         else if(isAfterDeadline(task)) {
-            sb.append(" !   ")
-            .append(task.getName())
-            .append("    PO TERMINIE");
+            sb.append("[PO TERMINIE]    ")
+            .append(task.getName());
         }
         else {
             sb.append(task.getName());

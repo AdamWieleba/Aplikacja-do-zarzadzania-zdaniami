@@ -65,18 +65,29 @@ public class utilsUI {
         }
         
         switch (sortOption) {
-            case 0: // Nazwa
+            case 0: // Nazwa alfabetycznie
                 tasks.sort(Comparator.comparing(Task::getName));
                 break;
-            case 1: // Trudność
+            case 1: // Nazwa odwrotnie
+                tasks.sort(Comparator.comparing(Task::getName).reversed());
+                break;
+            case 2: // Trudność od najłatiwejszych
                 tasks.sort(Comparator.comparingDouble(Task::getDifficultyDbl)
                         .thenComparing(Task::getName)); // thenComparing na wypadek równych wartości
                 break;
-            case 2: // Ważność
-                tasks.sort(Comparator.comparingInt(Task::getImportance)
-                        .thenComparing(Task::getName).reversed()); // reversed żeby ważniejsze były wyżej
+            case 3: // Trudność od najtrudniejszych
+                tasks.sort(Comparator.comparingDouble(Task::getDifficultyDbl).reversed()
+                        .thenComparing(Task::getName));
                 break;
-            case 3: // Termin
+            case 4: // Ważność od najważniejszych
+                tasks.sort(Comparator.comparingInt(Task::getImportance).reversed()
+                        .thenComparing(Task::getName));
+                break;
+            case 5: // Ważność od najmniej ważnych
+                tasks.sort(Comparator.comparingInt(Task::getImportance)
+                        .thenComparing(Task::getName));
+                break;
+            case 6: // Termin
                 tasks.sort(Comparator.comparing(Task::getDeadlineOrDefault)
                         .thenComparing(Task::getName));
                 break;

@@ -235,18 +235,19 @@ public class TaskManagerFrame extends JFrame {
 
     private void openTaskCalendar() {
         JDialog calendarDialog = new JDialog(this, "Kalendarz zadań", true);
-        JPanel calendarPanel = new JPanel(new GridLayout(0, 7, 5, 5));
+        JPanel calendarPanel = new JPanel(new GridLayout(4, 7, 5, 5));
         calendarPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
         
         Calendar cal = Calendar.getInstance();
-        cal.set(Calendar.HOUR_OF_DAY, 23);
-        cal.set(Calendar.MINUTE, 59);
-        cal.set(Calendar.SECOND, 59);
+        Calendar today = Calendar.getInstance();
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
         
-        // Przesunięcie do ostatniego poniedziałku
-        while (cal.get(Calendar.DAY_OF_WEEK) != Calendar.MONDAY) {
-            cal.add(Calendar.DAY_OF_MONTH, -1);
-        }
+        // Przesunięcie do poniedziałku bieżącego tygodnia
+        int dayOfWeek = cal.get(Calendar.DAY_OF_WEEK);
+        int daysToGoBack = (dayOfWeek - Calendar.MONDAY + 7) % 7;
+        cal.add(Calendar.DAY_OF_MONTH, -daysToGoBack);
 
         String[] dayNames = {"Poniedziałek", "Wtorek", "Środa", "Czwartek", "Piątek", "Sobota", "Niedziela"};
         for (String day : dayNames) {
@@ -257,31 +258,76 @@ public class TaskManagerFrame extends JFrame {
         
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
-        for (int i = 0; i < 30; i++) {
-            JPanel dayPanel = new JPanel(new BorderLayout());
-            dayPanel.setBorder(BorderFactory.createLineBorder(Color.GRAY));
-
+        for (int i = 0; i < 21; i++) {
+            JPanel dayPanel = new JPanel(new BorderLayout(5, 5));
+            
+            boolean isToday = sdf.format(cal.getTime()).equals(sdf.format(today.getTime()));
+            if (isToday) {
+                dayPanel.setBorder(BorderFactory.createLineBorder(Color.GREEN, 3));
+            } else {
+                dayPanel.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+            }
+            dayPanel.setBackground(Color.WHITE);
+            dayPanel.setOpaque(true);
+            
             JLabel dateLabel = new JLabel(String.valueOf(cal.get(Calendar.DAY_OF_MONTH)));
             dateLabel.setFont(new Font(null, Font.BOLD, 14));
             dayPanel.add(dateLabel, BorderLayout.NORTH);
             
-            StringBuilder tasksText = new StringBuilder("<html>");
+            // Panel z listą zadań i scrollem wewnętrznym
+            JPanel tasksPanel = new JPanel();
+            tasksPanel.setLayout(new BoxLayout(tasksPanel, BoxLayout.Y_AXIS));
+            tasksPanel.setBackground(Color.WHITE);
+
             for (Task task : controller.getTasks()) {
                 if (!task.isArchived() && sdf.format(task.getDeadlineOrDefault()).equals(sdf.format(cal.getTime()))) {
-                    tasksText.append("• ").append(task.getName()).append("<br>");
+                    String taskName = task.getName();
+
+                    // Zawijanie do max 2 linii
+                    int lineLength = 14;
+                    int firstLineLength = lineLength - 2; // miejsce na "• "
+                    int maxLength = firstLineLength + lineLength;
+                    if (taskName.length() > maxLength) {
+                        taskName = taskName.substring(0, maxLength - 3) + "...";
+                    }
+
+                    StringBuilder wrappedName = new StringBuilder();
+                    // pierwsza linia
+                    int endFirst = Math.min(firstLineLength, taskName.length());
+                    wrappedName.append(taskName.substring(0, endFirst));
+                    // druga linia
+                    if (taskName.length() > firstLineLength) {
+                        wrappedName.append("<br>").append(taskName.substring(
+                            firstLineLength, Math.min(firstLineLength + lineLength, taskName.length())));
+                    }
+                    
+                    JLabel taskLabel = new JLabel("<html>• " + wrappedName + "</html>");
+                    taskLabel.setFont(new Font("Monospaced", Font.PLAIN, 13));
+                    taskLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+                    tasksPanel.add(taskLabel);
                 }
             }
-            tasksText.append("</html>");
 
-            dayPanel.add(new JLabel(tasksText.toString()), BorderLayout.CENTER);
+            tasksPanel.add(Box.createVerticalGlue());
+
+            JScrollPane scrollPane = new JScrollPane(tasksPanel);
+            scrollPane.setPreferredSize(new Dimension(150, 80));
+            scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+            scrollPane.setBorder(null);
+            dayPanel.add(scrollPane, BorderLayout.CENTER);
+            
+            // Maksymalna wysokość dla dayPanel
+            dayPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 120));
+            dayPanel.setPreferredSize(new Dimension(100, 120));
             
             calendarPanel.add(dayPanel);
             cal.add(Calendar.DAY_OF_MONTH, 1);
         }
         
-        calendarDialog.add(new JScrollPane(calendarPanel));
-        calendarDialog.setSize(800, 600);
-        calendarDialog.setMinimumSize(new Dimension(calendarDialog.getWidth(), calendarDialog.getHeight()));
+        JScrollPane mainScrollPane = new JScrollPane(calendarPanel);
+        calendarDialog.add(mainScrollPane);
+        calendarDialog.setSize(900, 600);
+        calendarDialog.setMinimumSize(new Dimension(900, 600));
         calendarDialog.setLocationRelativeTo(this);
         calendarDialog.setVisible(true);
     }

@@ -1,8 +1,10 @@
 package com.aw.taskmanager.ui;
 
 import com.aw.taskmanager.model.Dependency;
+import com.aw.taskmanager.model.Schedule;
 import com.aw.taskmanager.model.Task;
 import com.aw.taskmanager.ui.dialogs.DependencyDialog;
+import com.aw.taskmanager.ui.dialogs.PlannerDialog;
 import com.aw.taskmanager.ui.dialogs.TaskDialog;
 import com.aw.taskmanager.ui.calendar.TaskCalendar;
 
@@ -23,6 +25,7 @@ public class TaskManagerFrame extends JFrame {
     private final JEditorPane detailsArea = new JEditorPane();
     private final DependencyDialog depDialog;
     private final TaskDialog taskDialog;
+    private final PlannerDialog plannerDialog;
     private final utilsUI utils;
     private int lastSortOption = 0; //Domyślnie alfabetycznie
     private boolean showArchived = false;
@@ -37,6 +40,7 @@ public class TaskManagerFrame extends JFrame {
         this.utils = new utilsUI(controller, listModel, taskList, this);
         this.depDialog = new DependencyDialog(controller, listModel, taskList, this);
         this.taskDialog = new TaskDialog(controller, listModel, taskList, this);
+        this.plannerDialog = new PlannerDialog(controller, listModel, taskList, this);
 
         initUI();
         refreshTasks();
@@ -91,6 +95,7 @@ public class TaskManagerFrame extends JFrame {
         toggleArchiveButton = new JButton("Pokaż archiwalne");
         JButton addDependencyButton = new JButton("Dodaj powiązanie");
         JButton removeDependencyButton = new JButton("Usuń powiązanie");
+        JButton planExecutionButton = new JButton("Zaplanuj wykonanie");
         JButton showCalendarButton = new JButton("Pokaż kalendarz");
 
         addButton.addActionListener(e -> taskDialog.showAddDialog(lastSortOption, showArchived));
@@ -101,6 +106,7 @@ public class TaskManagerFrame extends JFrame {
         toggleArchiveButton.addActionListener(e -> toggleArchiveView());
         addDependencyButton.addActionListener(e -> depDialog.showAddDependencyDialog(lastSortOption, showArchived));
         removeDependencyButton.addActionListener(e -> depDialog.showRemoveDependencyDialog(lastSortOption, showArchived));
+        planExecutionButton.addActionListener(e -> plannerDialog.showPlannerDialog(lastSortOption, showArchived));
         showCalendarButton.addActionListener(e -> TaskCalendar.openTaskCalendar(this, controller));
 
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
@@ -114,6 +120,7 @@ public class TaskManagerFrame extends JFrame {
         buttonPanel.add(toggleArchiveButton);
         buttonPanel.add(addDependencyButton);
         buttonPanel.add(removeDependencyButton);
+        buttonPanel.add(planExecutionButton);
         buttonPanel.add(showCalendarButton);
 
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
@@ -179,6 +186,7 @@ public class TaskManagerFrame extends JFrame {
                 .append(escapeHtmlWithBreaks(task.getNotes())).append("</p>");
         }
         sb.append(renderDependenciesSection(task.getDependencies()));
+        sb.append(renderScheduleSection(task.getSchedules()));
         sb.append("</body></html>");
 
         detailsArea.setText(sb.toString());
@@ -200,6 +208,24 @@ public class TaskManagerFrame extends JFrame {
                     .append("</strong><br/>")
                     .append(escapeHtmlWithBreaks(dep.getName()))
                     .append("</p>");
+        }
+        sb.append("</div>");
+        return sb.toString();
+    }
+
+    private String renderScheduleSection(List<Schedule> schedules) {
+        if (schedules == null || schedules.isEmpty()) {
+            return "";
+        }
+        StringBuilder sb = new StringBuilder();
+        sb.append("<p><strong>Planowany czas wykonania:</strong></p>");
+        sb.append("<div style='margin-left:6px;'>");
+        for (Schedule schedule : schedules) {
+            String date = utils.formatDate(schedule.getDate());
+            String startTime = utils.formatTime(schedule.getStartTime());
+            String endTime = utils.formatTime(schedule.getEndTime());
+            sb.append("<p style='margin:4px 0;'><strong>")
+                    .append(date + ",  " + startTime + " - " + endTime + "</p>");
         }
         sb.append("</div>");
         return sb.toString();

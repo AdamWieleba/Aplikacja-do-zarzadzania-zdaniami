@@ -122,5 +122,13 @@ public class utilsUI {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         return sdf.format(date);
     }
+
+    public String formatTime(Date time) {
+        if (time == null) {
+            return "";
+        }
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+        return sdf.format(time);
+    }
     
 }

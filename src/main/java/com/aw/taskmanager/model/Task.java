@@ -19,9 +19,8 @@ public class Task {
     private boolean isArchived;
     private Date deadline;
     
-    @XmlElementWrapper(name = "dependencies")
-    @XmlElement(name = "dependency")
     private List<Dependency> dependencies = new ArrayList<>();  //gwarantuje inicjalizację
+    private List<Schedule> schedules = new ArrayList<>();
     
     @XmlID
     private String id;
@@ -52,15 +51,23 @@ public class Task {
     public List<Dependency> getDependencies() {
         return dependencies;
     }
-    
     public void addDependency(Dependency dep) {
         dep.getSrc().dependencies.add(dep);
         dep.getDst().dependencies.add(dep);
     }
-    
     public void removeDependency(Dependency dep) {
         dep.getSrc().dependencies.remove(dep);
         dep.getDst().dependencies.remove(dep);
+    }
+    
+    public List<Schedule> getSchedules() {
+        return schedules;
+    }
+    public void addSchedule(Schedule schedule) {
+        schedules.add(schedule);
+    }
+    public void removeSchedule(Schedule schedule) {
+        schedules.remove(schedule);
     }
     
     public String getName() {

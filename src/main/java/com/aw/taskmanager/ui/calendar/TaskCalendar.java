@@ -1,6 +1,7 @@
 package com.aw.taskmanager.ui.calendar;
 
 import com.aw.taskmanager.ui.TaskController;
+import com.aw.taskmanager.model.Schedule;
 import com.aw.taskmanager.model.Task;
 
 import javax.swing.*;
@@ -8,6 +9,7 @@ import java.awt.*;
 import javax.swing.border.EmptyBorder;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
 public class TaskCalendar extends JFrame {
     
@@ -73,7 +75,6 @@ public class TaskCalendar extends JFrame {
 
             monthLabel.setText("Aktualny miesiąc: " + new SimpleDateFormat("LLLL yyyy").format(cal.getTime()));
 
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             SimpleDateFormat firstDayFormat = new SimpleDateFormat("d MMMM");
             int dayHeight = 450 / weeks;
 
@@ -81,8 +82,7 @@ public class TaskCalendar extends JFrame {
 
                 JPanel dayPanel = new JPanel(new BorderLayout(5, 5));
 
-                boolean isToday = sdf.format(cal.getTime())
-                    .equals(sdf.format(today.getTime()));
+                boolean isToday = isSameDay(cal.getTime(), today.getTime());
 
                 if (isToday) {
                     dayPanel.setBorder(BorderFactory.createLineBorder(Color.GREEN, 3));
@@ -111,30 +111,8 @@ public class TaskCalendar extends JFrame {
                 tasksPanel.setBackground(Color.WHITE);
 
                 for (Task task : controller.getTasks()) {
-                    if (!task.isArchived() && sdf.format(task.getDeadlineOrDefault()).equals(sdf.format(cal.getTime()))) {
-                        String taskName = task.getName();
-
-                        // Zawijanie do max 2 linii
-                        int lineLength = 14;
-                        int firstLineLength = lineLength - 2; // miejsce na "• "
-                        int maxLength = firstLineLength + lineLength;
-                        if (taskName.length() > maxLength) {
-                            taskName = taskName.substring(0, maxLength - 3) + "...";
-                        }
-
-                        StringBuilder wrappedName = new StringBuilder();
-                        // pierwsza linia
-                        int endFirst = Math.min(firstLineLength, taskName.length());
-                        wrappedName.append(taskName.substring(0, endFirst));
-                        // druga linia
-                        if (taskName.length() > firstLineLength) {
-                            wrappedName.append("<br>").append(taskName.substring(
-                                firstLineLength, Math.min(firstLineLength + lineLength, taskName.length())));
-                        }
-                        
-                        JLabel taskLabel = new JLabel("<html>• " + wrappedName + "</html>");
-                        taskLabel.setFont(new Font("Monospaced", Font.PLAIN, 13));
-                        taskLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+                    JLabel taskLabel = makeTaskLabel(task, cal);
+                    if (taskLabel != null) {
                         tasksPanel.add(taskLabel);
                     }
                 }
@@ -160,9 +138,79 @@ public class TaskCalendar extends JFrame {
 
         rebuildCalendar.run();
 
-        calendarDialog.setSize(1000, 650);
+        calendarDialog.setSize(1200, 650);
         calendarDialog.setMinimumSize(new Dimension(calendarDialog.getWidth(), calendarDialog.getHeight()));
         calendarDialog.setLocationRelativeTo(parentFrame);
         calendarDialog.setVisible(true);
+    }
+
+    private static JLabel makeTaskLabel(Task task, Calendar cal) {
+        boolean isPlanned = false;
+        boolean isDeadline = false;
+        if (!task.isArchived()) {
+            // sprawdź czy choć jeden schedule z listy jest dziś
+            for (Schedule schedule : task.getSchedules()) {
+                if (isSameDay(schedule.getDate(), cal.getTime())) {
+                    isPlanned = true;
+                    break;
+                }
+            }
+            isDeadline = isSameDay(task.getDeadlineOrDefault(), cal.getTime());
+        }
+        
+        if (isPlanned || isDeadline) {
+            String taskName = task.getName();
+
+            // Zawijanie tekstu
+            int lineLength = 19;
+            int maxLines = 2;
+            
+            int maxLength = lineLength * maxLines;
+            if (taskName.length() > maxLength) {
+                taskName = taskName.substring(0, maxLength - 3) + "...";
+            }
+
+            StringBuilder wrappedName = new StringBuilder();
+            for (int j = 0; j < taskName.length(); j += lineLength) {
+                wrappedName
+                        .append("<br>")
+                        .append(taskName.substring(j, Math.min(j + lineLength, taskName.length())));
+            }
+            
+            StringBuilder plannedTime = new StringBuilder("<b>");
+            boolean first = true;
+            for (Schedule schedule : task.getSchedules()) {
+                SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+                if (isSameDay(schedule.getDate(), cal.getTime())) {
+                    plannedTime
+                        .append(first ? "" : "<br>")
+                        .append(" ")
+                        .append(sdf.format(schedule.getStartTime()))
+                        .append(" - ")
+                        .append(sdf.format(schedule.getEndTime()));
+                    first = false;
+                }
+            }
+            plannedTime.append("</b>");
+
+            StringBuilder fullText = new StringBuilder()
+                .append("<html>•")
+                .append(isDeadline ? "<b>[Ostateczny termin]</b>" : "")
+                .append(isDeadline && isPlanned ? "<br>" : "")
+                .append(plannedTime)
+                .append(wrappedName)
+                .append("</html>");
+            
+            JLabel taskLabel = new JLabel(fullText.toString());
+            taskLabel.setFont(new Font("Monospaced", Font.PLAIN, 13));
+            taskLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+            return taskLabel;
+        }
+        return null;
+    }
+
+    private static boolean isSameDay(Date date1, Date date2) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        return sdf.format(date1).equals(sdf.format(date2));
     }
 }

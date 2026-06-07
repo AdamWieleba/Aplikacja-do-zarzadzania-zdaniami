@@ -5,6 +5,7 @@ import javax.swing.*;
 import java.util.List;
 
 import com.aw.taskmanager.model.Dependency;
+import com.aw.taskmanager.model.Schedule;
 import com.aw.taskmanager.model.Task;
 import com.aw.taskmanager.ui.TaskController;
 import com.aw.taskmanager.ui.utilsUI;
@@ -25,10 +26,6 @@ public class DependencyDialog {
 
     public void showAddDependencyDialog(int lastSortOption, boolean showArchived) {
         Task selectedTask = taskList.getSelectedValue();
-        if (selectedTask == null) {
-            JOptionPane.showMessageDialog(parentFrame, "Wybierz zadanie najpierw.", "Brak wyboru", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
 
         JDialog dialog = new JDialog(parentFrame, "Dodaj powiązanie", true);
         dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
@@ -65,7 +62,7 @@ public class DependencyDialog {
         // Domyślnie ustaw wybrane zadanie jako źródłowe
         srcCombo.setSelectedItem(selectedTask);
 
-        JButton swapButton = new JButton("Zamień");
+        JButton swapButton = new JButton("Zmień kolejność");
         swapButton.addActionListener(e -> {
             Task temp = (Task) srcCombo.getSelectedItem();
             srcCombo.setSelectedItem(dstCombo.getSelectedItem());
@@ -124,20 +121,11 @@ public class DependencyDialog {
         dialog.setVisible(true);
     }
 
-    public void showRemoveDependencyDialog(int lastSortOption, boolean showArchived) {
+    public void showDependencyDialog(int lastSortOption, boolean showArchived) {
         Task selectedTask = taskList.getSelectedValue();
-        if (selectedTask == null) {
-            JOptionPane.showMessageDialog(parentFrame, "Wybierz zadanie najpierw.", "Nie wybrano zadania", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-
         List<Dependency> dependencies = selectedTask.getDependencies();
-        if (dependencies.isEmpty()) {
-            JOptionPane.showMessageDialog(parentFrame, "Wybrane zadanie nie ma powiązań.", "Brak powiązań", JOptionPane.INFORMATION_MESSAGE);
-            return;
-        }
 
-        JDialog dialog = new JDialog(parentFrame, "Usuń powiązanie", true);
+        JDialog dialog = new JDialog(parentFrame, "Zarządzaj powiązaniami", true);
         dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         dialog.setSize(400, 200);
         dialog.setLocationRelativeTo(parentFrame);
@@ -186,27 +174,35 @@ public class DependencyDialog {
             return panel;
         });
 
+        JButton addButton = new JButton("Dodaj");
         JButton removeButton = new JButton("Usuń");
-        JButton cancelButton = new JButton("Anuluj");
+        JButton okButton = new JButton("Ok");
+
+        addButton.addActionListener(e -> {
+            showAddDependencyDialog(lastSortOption, showArchived);
+            depListModel.clear(); // odświeża listę po dodaniu
+            dependencies.forEach(depListModel::addElement);
+        });
 
         removeButton.addActionListener(e -> {
             Dependency selectedDep = depList.getSelectedValue();
             if (selectedDep != null) {
                 controller.removeDependency(selectedDep);
+                depListModel.removeElement(selectedDep);
                 refreshTasks(lastSortOption, showArchived);
                 selectTaskById(selectedTask.getId());
-                dialog.dispose();
             }
         });
 
-        cancelButton.addActionListener(e -> dialog.dispose());
+        okButton.addActionListener(e -> {dialog.dispose();});
 
         JPanel panel = new JPanel(new BorderLayout());
         panel.add(new JScrollPane(depList), BorderLayout.CENTER);
 
         JPanel buttonPanel = new JPanel(new FlowLayout());
+        buttonPanel.add(addButton);
         buttonPanel.add(removeButton);
-        buttonPanel.add(cancelButton);
+        buttonPanel.add(okButton);
 
         dialog.getContentPane().setLayout(new BorderLayout());
         dialog.getContentPane().add(panel, BorderLayout.CENTER);

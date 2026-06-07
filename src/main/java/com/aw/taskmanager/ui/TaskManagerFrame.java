@@ -93,8 +93,7 @@ public class TaskManagerFrame extends JFrame {
         archiveButton = new JButton("Archiwizuj");
         restoreButton = new JButton("Przywróć");
         toggleArchiveButton = new JButton("Pokaż archiwalne");
-        JButton addDependencyButton = new JButton("Dodaj powiązanie");
-        JButton removeDependencyButton = new JButton("Usuń powiązanie");
+        JButton manageDependenciesButton = new JButton("Zarządzaj powiązaniami");
         JButton planExecutionButton = new JButton("Zaplanuj wykonanie");
         JButton showCalendarButton = new JButton("Pokaż kalendarz");
 
@@ -104,8 +103,7 @@ public class TaskManagerFrame extends JFrame {
         archiveButton.addActionListener(e -> archiveSelectedTask(true));
         restoreButton.addActionListener(e -> archiveSelectedTask(false));
         toggleArchiveButton.addActionListener(e -> toggleArchiveView());
-        addDependencyButton.addActionListener(e -> depDialog.showAddDependencyDialog(lastSortOption, showArchived));
-        removeDependencyButton.addActionListener(e -> depDialog.showRemoveDependencyDialog(lastSortOption, showArchived));
+        manageDependenciesButton.addActionListener(e -> depDialog.showDependencyDialog(lastSortOption, showArchived));
         planExecutionButton.addActionListener(e -> plannerDialog.showPlannerDialog(lastSortOption, showArchived));
         showCalendarButton.addActionListener(e -> TaskCalendar.openTaskCalendar(this, controller));
 
@@ -118,8 +116,7 @@ public class TaskManagerFrame extends JFrame {
         buttonPanel.add(archiveButton);
         buttonPanel.add(restoreButton);
         buttonPanel.add(toggleArchiveButton);
-        buttonPanel.add(addDependencyButton);
-        buttonPanel.add(removeDependencyButton);
+        buttonPanel.add(manageDependenciesButton);
         buttonPanel.add(planExecutionButton);
         buttonPanel.add(showCalendarButton);
 

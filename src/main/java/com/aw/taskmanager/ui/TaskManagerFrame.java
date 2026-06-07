@@ -6,6 +6,7 @@ import com.aw.taskmanager.model.Task;
 import com.aw.taskmanager.ui.dialogs.DependencyDialog;
 import com.aw.taskmanager.ui.dialogs.PlannerDialog;
 import com.aw.taskmanager.ui.dialogs.TaskDialog;
+import com.aw.taskmanager.ui.dialogs.NotesDialog;
 import com.aw.taskmanager.ui.calendar.TaskCalendar;
 
 import javax.swing.*;
@@ -25,6 +26,7 @@ public class TaskManagerFrame extends JFrame {
     private final JEditorPane detailsArea = new JEditorPane();
     private final DependencyDialog depDialog;
     private final TaskDialog taskDialog;
+    private final NotesDialog notesDialog;
     private final PlannerDialog plannerDialog;
     private final utilsUI utils;
     private int lastSortOption = 0; //Domyślnie alfabetycznie
@@ -40,6 +42,7 @@ public class TaskManagerFrame extends JFrame {
         this.utils = new utilsUI(controller, listModel, taskList, this);
         this.depDialog = new DependencyDialog(controller, listModel, taskList, this);
         this.taskDialog = new TaskDialog(controller, listModel, taskList, this);
+        this.notesDialog = new NotesDialog(controller, listModel, taskList, this);
         this.plannerDialog = new PlannerDialog(controller, listModel, taskList, this);
 
         initUI();
@@ -94,6 +97,7 @@ public class TaskManagerFrame extends JFrame {
         restoreButton = new JButton("Przywróć");
         toggleArchiveButton = new JButton("Pokaż archiwalne");
         JButton manageDependenciesButton = new JButton("Zarządzaj powiązaniami");
+        JButton showNotesButton = new JButton("Dopisz notatkę");
         JButton planExecutionButton = new JButton("Zaplanuj wykonanie");
         JButton showCalendarButton = new JButton("Pokaż kalendarz");
 
@@ -104,6 +108,7 @@ public class TaskManagerFrame extends JFrame {
         restoreButton.addActionListener(e -> archiveSelectedTask(false));
         toggleArchiveButton.addActionListener(e -> toggleArchiveView());
         manageDependenciesButton.addActionListener(e -> depDialog.showDependencyDialog(lastSortOption, showArchived));
+        showNotesButton.addActionListener(e -> notesDialog.showNotesDialog(lastSortOption, showArchived));
         planExecutionButton.addActionListener(e -> plannerDialog.showPlannerDialog(lastSortOption, showArchived));
         showCalendarButton.addActionListener(e -> TaskCalendar.openTaskCalendar(this, controller));
 
@@ -117,6 +122,7 @@ public class TaskManagerFrame extends JFrame {
         buttonPanel.add(restoreButton);
         buttonPanel.add(toggleArchiveButton);
         buttonPanel.add(manageDependenciesButton);
+        buttonPanel.add(showNotesButton);
         buttonPanel.add(planExecutionButton);
         buttonPanel.add(showCalendarButton);
 

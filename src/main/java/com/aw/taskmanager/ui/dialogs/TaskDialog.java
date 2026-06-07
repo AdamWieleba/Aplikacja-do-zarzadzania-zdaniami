@@ -27,7 +27,7 @@ public class TaskDialog {
         boolean editMode = taskToEdit != null;
         JDialog dialog = new JDialog(parentFrame, editMode ? "Edytuj zadanie" : "Dodaj zadanie", true);
         dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-        dialog.setSize(400, 500);
+        dialog.setSize(400, 400);
         dialog.setLocationRelativeTo(parentFrame);
 
         JTextField nameField = new JTextField();
@@ -40,10 +40,6 @@ public class TaskDialog {
         JTextField difficultyStrField = new JTextField();
         JSpinner difficultyDblSpinner = new JSpinner(new SpinnerNumberModel(0.0, 0.0, 5.0, 0.5));
         JTextField importanceField = new JTextField();
-        JTextArea notesArea = new JTextArea(3, 20);
-        notesArea.setLineWrap(true);
-        notesArea.setWrapStyleWord(true);
-        JScrollPane notesScroll = new JScrollPane(notesArea);
 
         if (editMode) {
             nameField.setText(taskToEdit.getName());
@@ -52,7 +48,6 @@ public class TaskDialog {
             difficultyStrField.setText(taskToEdit.getDifficultyStr());
             difficultyDblSpinner.setValue(taskToEdit.getDifficultyDbl() != null ? taskToEdit.getDifficultyDbl() : 0.0);
             importanceField.setText(String.valueOf(taskToEdit.getImportance()));
-            notesArea.setText(taskToEdit.getNotes());
         } else {
             dateChooser.setDate(new Date());
         }
@@ -72,7 +67,7 @@ public class TaskDialog {
                         difficultyStrField.getText().stripTrailing(),
                         difficultyDbl,
                         importance,
-                        notesArea.getText().stripTrailing(),
+                        null,
                         taskToEdit.isArchived(),
                         dateChooser.getDate());
                 taskId = taskToEdit.getId();
@@ -83,7 +78,7 @@ public class TaskDialog {
                         difficultyStrField.getText().stripTrailing(),
                         difficultyDbl,
                         importance,
-                        notesArea.getText().stripTrailing(),
+                        null,
                         false,
                         dateChooser.getDate())
                         .getId();
@@ -131,11 +126,6 @@ public class TaskDialog {
         panel.add(new JLabel("Ważność:"), gbc);
         gbc.gridx = 1;
         panel.add(importanceField, gbc);
-
-        gbc.gridx = 0; gbc.gridy = position++; gbc.fill = GridBagConstraints.NONE; gbc.weightx = 0;
-        panel.add(new JLabel("Notatki:"), gbc);
-        gbc.gridx = 1; gbc.fill = GridBagConstraints.BOTH; gbc.weightx = 1.0; gbc.weighty = 0.5;
-        panel.add(notesScroll, gbc);
 
         JPanel buttonPanel = new JPanel(new FlowLayout());
         buttonPanel.add(okButton);

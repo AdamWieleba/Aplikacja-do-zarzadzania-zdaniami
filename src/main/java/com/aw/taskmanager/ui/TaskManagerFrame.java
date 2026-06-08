@@ -112,19 +112,26 @@ public class TaskManagerFrame extends JFrame {
         planExecutionButton.addActionListener(e -> plannerDialog.showPlannerDialog(lastSortOption, showArchived));
         showCalendarButton.addActionListener(e -> TaskCalendar.openTaskCalendar(this, controller));
 
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        buttonPanel.add(new JLabel("Sortuj:"));
-        buttonPanel.add(sortCombo);
-        buttonPanel.add(addButton);
-        buttonPanel.add(editButton);
-        buttonPanel.add(deleteButton);
-        buttonPanel.add(archiveButton);
-        buttonPanel.add(restoreButton);
-        buttonPanel.add(toggleArchiveButton);
-        buttonPanel.add(manageDependenciesButton);
-        buttonPanel.add(showNotesButton);
-        buttonPanel.add(planExecutionButton);
-        buttonPanel.add(showCalendarButton);
+        JPanel buttonPanel = new JPanel(new BorderLayout());
+
+        JPanel topButtons = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        topButtons.add(new JLabel("Sortuj:"));
+        topButtons.add(sortCombo);
+        topButtons.add(addButton);
+        topButtons.add(editButton);
+        topButtons.add(deleteButton);
+        topButtons.add(archiveButton);
+        topButtons.add(restoreButton);
+        topButtons.add(toggleArchiveButton);
+
+        JPanel bottomButtons = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        bottomButtons.add(manageDependenciesButton);
+        bottomButtons.add(showNotesButton);
+        bottomButtons.add(planExecutionButton);
+        bottomButtons.add(showCalendarButton);
+
+        buttonPanel.add(topButtons, BorderLayout.NORTH);
+        buttonPanel.add(bottomButtons, BorderLayout.CENTER);
 
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
                 new JScrollPane(taskList),

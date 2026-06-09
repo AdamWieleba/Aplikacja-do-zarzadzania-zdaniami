@@ -183,12 +183,7 @@ public class TaskManagerFrame extends JFrame {
                 .append(isAfterDeadline(task) && !task.isArchived() ? "<strong> (po terminie)</strong>" : "")
                 .append("</p>");
         }
-        sb.append("<p><strong>Trudność:</strong>")
-                .append(" &nbsp;")  //spacje nieprzerywane
-                .append(escapeHtml(task.getDifficultyStr()))
-                .append(" &nbsp;(")
-                .append(formatDifficultyDbl(task.getDifficultyDbl()))
-                .append(" na 5)</p>");
+        sb.append(renderDifficultySection(task.getDifficultyStr(), task.getDifficultyDbl()));
         sb.append("<p><strong>Ważność:</strong> ")
                 .append(task.getImportance()).append("</p>");
         if (task.getNotes() != null && !task.getNotes().trim().isEmpty()) {
@@ -201,6 +196,21 @@ public class TaskManagerFrame extends JFrame {
 
         detailsArea.setText(sb.toString());
         detailsArea.setCaretPosition(0);
+    }
+
+    private String renderDifficultySection(String difficultyStr, Double difficultyDbl) {
+        StringBuilder sb = new StringBuilder("<p><strong>Trudność:</strong> &nbsp;");
+
+        if (difficultyStr == null || difficultyStr.isEmpty()) {
+            sb.append(formatDifficultyDbl(difficultyDbl))
+                .append(" / 5</p>");
+        } else {
+            sb.append(escapeHtml(difficultyStr))
+                .append(" &nbsp;(")
+                .append(formatDifficultyDbl(difficultyDbl))
+                .append(" / 5)</p>");
+        }
+        return sb.toString();
     }
 
     private String renderDependenciesSection(List<Dependency> dependencies) {

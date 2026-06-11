@@ -5,7 +5,6 @@ import javax.swing.*;
 import java.util.List;
 
 import com.aw.taskmanager.model.Dependency;
-import com.aw.taskmanager.model.Schedule;
 import com.aw.taskmanager.model.Task;
 import com.aw.taskmanager.ui.TaskController;
 import com.aw.taskmanager.ui.utilsUI;

@@ -113,7 +113,7 @@ public class PlannerDialog {
                 "Do godziny:", endTimeSpinner
         };
 
-        int result = JOptionPane.showConfirmDialog(parentFrame, fields, "Dodaj zadanie",
+        int result = JOptionPane.showConfirmDialog(parentFrame, fields, "Dodaj blok czasowy",
         JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 
         if (result == JOptionPane.OK_OPTION) {

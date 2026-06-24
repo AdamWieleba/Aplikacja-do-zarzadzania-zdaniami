@@ -48,8 +48,6 @@ public class TaskDialog {
             difficultyStrField.setText(taskToEdit.getDifficultyStr());
             difficultyDblSpinner.setValue(taskToEdit.getDifficultyDbl() != null ? taskToEdit.getDifficultyDbl() : 0.0);
             importanceField.setText(String.valueOf(taskToEdit.getImportance()));
-        } else {
-            dateChooser.setDate(new Date());
         }
 
         JButton okButton = new JButton("OK");

@@ -31,7 +31,8 @@ public class TaskManagerFrame extends JFrame {
     private final utilsUI utils;
     private int lastSortOption = 0; //Domyślnie alfabetycznie
     private boolean showArchived = false;
-    private JButton archiveButton;
+
+    private JButton archiveButton; // używane przez metody prywatne 
     private JButton restoreButton;
     private JButton toggleArchiveButton;
 
@@ -175,7 +176,7 @@ public class TaskManagerFrame extends JFrame {
         sb.append("<h2 style='text-align:center; margin:0; padding:0;'>")
                 .append(escapeHtml(task.getName())).append("</h2>");
         sb.append("<p style='margin-top:12px;'> ")
-                .append(escapeHtmlWithBreaks(task.getDescr())).append("</p>");
+                .append(escapeHtml(task.getDescr())).append("</p>");
         sb.append("<hr style='margin:18px 0 0 0;'>");
         if (formatDate(task.getDeadlineOrDefault()).compareTo("2998-01-01") < 0) {
             sb.append("<p><strong>Ostateczny termin:</strong> ")
@@ -188,7 +189,7 @@ public class TaskManagerFrame extends JFrame {
                 .append(task.getImportance()).append("</p>");
         if (task.getNotes() != null && !task.getNotes().trim().isEmpty()) {
             sb.append("<p><strong>Notatki:</strong> <br/>")
-                .append(escapeHtmlWithBreaks(task.getNotes())).append("</p>");
+                .append(escapeHtml(task.getNotes())).append("</p>");
         }
         sb.append(renderDependenciesSection(task.getDependencies()));
         sb.append(renderScheduleSection(task.getSchedules()));
@@ -226,7 +227,7 @@ public class TaskManagerFrame extends JFrame {
             sb.append("<p style='margin:4px 0;'><strong>")
                     .append(srcName).append("</strong> -> <strong>").append(dstName)
                     .append("</strong><br/>")
-                    .append(escapeHtmlWithBreaks(dep.getName()))
+                    .append(escapeHtml(dep.getName()))
                     .append("</p>");
         }
         sb.append("</div>");
@@ -258,14 +259,8 @@ public class TaskManagerFrame extends JFrame {
         return text.replace("&", "&amp;")
                 .replace("<", "&lt;")
                 .replace(">", "&gt;")
-                .replace("\"", "&quot;");
-    }
-
-    private String escapeHtmlWithBreaks(String text) {
-        if (text == null) {
-            return "";
-        }
-        return escapeHtml(text).replace("\n", "<br>");
+                .replace("\"", "&quot;")
+                .replace("\n", "<br>");
     }
 
     private String formatDifficultyDbl(Double difficultyDbl) {

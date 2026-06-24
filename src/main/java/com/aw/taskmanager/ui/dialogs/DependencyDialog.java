@@ -133,18 +133,7 @@ public class DependencyDialog {
         dependencies.forEach(depListModel::addElement);
         JList<Dependency> depList = new JList<>(depListModel);
         depList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        depList.setCellRenderer((list, value, index, isSelected, cellHasFocus) -> {
-            String srcName = value.getSrc() != null ? value.getSrc().getName() : "";
-            String dstName = value.getDst() != null ? value.getDst().getName() : "";
-            String descr = value.getName() != null ? value.getName() : "";
-            JLabel label = new JLabel(srcName + " -> " + dstName + " (" + descr + ")");
-            if (isSelected) {
-                label.setOpaque(true);
-                label.setBackground(list.getSelectionBackground());
-                label.setForeground(list.getSelectionForeground());
-            }
-            return label;
-        });
+
         depList.setCellRenderer((list, value, index, isSelected, cellHasFocus) -> {
             String srcName = value.getSrc() != null ? value.getSrc().getName() : "";
             String dstName = value.getDst() != null ? value.getDst().getName() : "";
@@ -156,7 +145,7 @@ public class DependencyDialog {
             JLabel titleLabel = new JLabel(srcName + " -> " + dstName);
             JLabel descrLabel = new JLabel(descr);
             JLabel emptyLabel = new JLabel(" "); // odstęp między opisem a tytułem następnego
-            //descrLabel.setFont(descrLabel.getFont().deriveFont(Font.ITALIC, descrLabel.getFont().getSize())); // opcjonalnie: mniejsza, kursywa
+            //descrLabel.setFont(descrLabel.getFont().deriveFont(Font.ITALIC, descrLabel.getFont().getSize()));
             
             panel.add(titleLabel);
             panel.add(descrLabel);

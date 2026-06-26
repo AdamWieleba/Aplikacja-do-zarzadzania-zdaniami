@@ -42,10 +42,11 @@ public class DependencyDialog {
         JComboBox<Task> dstCombo = new JComboBox<>(dstModel);
         JTextField descrField = new JTextField();
 
+        int maxLabelLength = 25;
         srcCombo.setRenderer((list, value, index, isSelected, cellHasFocus) -> {
             JLabel label = new JLabel();
             if (value != null) {
-                label.setText(value.getName());
+                label.setText(trimName(value, maxLabelLength));
             }
             return label;
         });
@@ -53,7 +54,7 @@ public class DependencyDialog {
         dstCombo.setRenderer((list, value, index, isSelected, cellHasFocus) -> {
             JLabel label = new JLabel();
             if (value != null) {
-                label.setText(value.getName());
+                label.setText(trimName(value, maxLabelLength));
             }
             return label;
         });
@@ -198,6 +199,10 @@ public class DependencyDialog {
 
         dialog.setMinimumSize(new Dimension(dialog.getWidth(), dialog.getHeight()));
         dialog.setVisible(true);
+    }
+
+    private String trimName (Task task, int maxLength) {
+        return task.getName().substring(0, Math.min(task.getName().length(), maxLength));
     }
 
     private void refreshTasks(int lastSortOption, boolean showArchived) {

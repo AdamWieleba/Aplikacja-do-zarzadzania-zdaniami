@@ -23,7 +23,7 @@ public class TaskManagerFrame extends JFrame {
     private final TaskController controller;
     private final DefaultListModel<Task> listModel = new DefaultListModel<>();
     private final JList<Task> taskList = new JList<>(listModel);
-    private final JEditorPane detailsArea = new JEditorPane();
+    private final JTextPane detailsArea = new JTextPane();
     private final DependencyDialog depDialog;
     private final TaskDialog taskDialog;
     private final NotesDialog notesDialog;
@@ -89,7 +89,6 @@ public class TaskManagerFrame extends JFrame {
 
         detailsArea.setEditable(false);
         detailsArea.setContentType("text/html");
-        detailsArea.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, Boolean.TRUE);
 
         JButton addButton = new JButton("Dodaj");
         JButton editButton = new JButton("Edytuj");
@@ -137,7 +136,7 @@ public class TaskManagerFrame extends JFrame {
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
                 new JScrollPane(taskList),
                 new JScrollPane(detailsArea));
-        splitPane.setResizeWeight(0.4);
+        splitPane.setDividerLocation(370);
 
         getContentPane().setLayout(new BorderLayout(5, 5));
         getContentPane().add(buttonPanel, BorderLayout.NORTH);

@@ -119,6 +119,9 @@ public class Task {
         this.isArchived = isArchived;
     }
     
+    /**
+     * @return deadline - UWAGA: może być nullem!
+     */
     public Date getDeadline() {
         return deadline;
     }

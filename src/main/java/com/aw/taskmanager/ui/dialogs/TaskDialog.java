@@ -3,7 +3,6 @@ package com.aw.taskmanager.ui.dialogs;
 import java.awt.*;
 import javax.swing.*;
 import com.toedter.calendar.JDateChooser;
-import java.util.Date;
 
 import com.aw.taskmanager.model.Task;
 import com.aw.taskmanager.ui.TaskController;
@@ -34,7 +33,7 @@ public class TaskDialog {
         JTextArea descrArea = new JTextArea(3, 20);
         descrArea.setLineWrap(true);
         descrArea.setWrapStyleWord(true);
-        JDateChooser dateChooser = new JDateChooser(new Date());
+        JDateChooser dateChooser = new JDateChooser();
         dateChooser.setDateFormatString("yyyy-MM-dd");
         JScrollPane descrScroll = new JScrollPane(descrArea);
         JTextField difficultyStrField = new JTextField();
@@ -44,7 +43,7 @@ public class TaskDialog {
         if (editMode) {
             nameField.setText(taskToEdit.getName());
             descrArea.setText(taskToEdit.getDescr());
-            dateChooser.setDate(taskToEdit.getDeadlineOrDefault());
+            dateChooser.setDate(taskToEdit.getDeadline());
             difficultyStrField.setText(taskToEdit.getDifficultyStr());
             difficultyDblSpinner.setValue(taskToEdit.getDifficultyDbl() != null ? taskToEdit.getDifficultyDbl() : 0.0);
             importanceField.setText(String.valueOf(taskToEdit.getImportance()));
